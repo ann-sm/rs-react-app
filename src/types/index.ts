@@ -27,4 +27,14 @@ export interface CardProps {
 
 export interface AppState {
   pokemons: Pokemon[];
+  savedQuery: string;
+}
+
+export interface SearchProps {
+  initialValue: string;
+  onSearch: (searchQuery: string) => void;
+}
+
+export interface SearchState {
+  searchQuery: string;
 }

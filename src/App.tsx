@@ -8,15 +8,16 @@ import Search from './components/Search/Search';
 class App extends Component {
   state: AppState = {
     pokemons: [],
+    savedQuery: localStorage.getItem('ann-sm-pokemons') || '',
   }
 
   componentDidMount(): void {
-    this.fetchData();
+    this.fetchData(this.state.savedQuery);
   }
 
-  fetchData = async() => {
+  fetchData = async (searchQuery: string) => {
     try {
-      const data = await fetchPokemonList(20, 10);
+      const data = await fetchPokemonList(searchQuery, 20, 0);
 
       if (!data) {
         throw new Error('Failed to fetch data');
@@ -32,10 +33,16 @@ class App extends Component {
     }
   }
 
+  handleSearch = (searchQuery: string) => {
+    const newQuery = searchQuery.trim();
+    localStorage.setItem('ann-sm-pokemons', newQuery);
+    this.fetchData(newQuery);
+  }
+
   render() {
     return (
       <>
-        <Search/>
+        <Search initialValue={this.state.savedQuery} onSearch={this.handleSearch}/>
         <main>
           <CardList pokemons={this.state.pokemons}/>
         </main>
