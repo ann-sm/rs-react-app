@@ -9,12 +9,26 @@ export interface PokemonData {
   height: number;
   weight: number;
   sprites: {
-    front_default: string
-  }
+    front_default: string;
+  };
+  abilities: Array<{
+    ability: {
+      name: string;
+      url: string;
+    };
+    is_hidden: boolean;
+    slot: number;
+  }>;
 }
 
-export interface Pokemon extends Omit<PokemonData, 'sprites'> {
+export interface Pokemon extends Omit<PokemonData, 'sprites' | 'abilities'> {
   image: string;
+  abilities: string[];
+}
+
+export interface AppState {
+  pokemons: Pokemon[];
+  savedQuery: string;
 }
 
 export interface CardListProps {
@@ -23,11 +37,6 @@ export interface CardListProps {
 
 export interface CardProps {
   data: Pokemon;
-}
-
-export interface AppState {
-  pokemons: Pokemon[];
-  savedQuery: string;
 }
 
 export interface SearchProps {

@@ -9,41 +9,45 @@ export const fetchPokemonList = async (
 ): Promise<Pokemon[]> => {
   try {
     if (!searchQuery) {
-      const response = await fetch(`${BASE_URL}?limit=${limit}&offset=${offset}`);
-      
+      const response = await fetch(
+        `${BASE_URL}?limit=${limit}&offset=${offset}`
+      );
+
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
 
       const data: { results: PokemonResponse[] } = await response.json();
-  
-      const items: Pokemon[] = await Promise.all(data.results.map(async(item) => await fetchPokemonData(item.url)));
+
+      const items: Pokemon[] = await Promise.all(
+        data.results.map(async (item) => await fetchPokemonData(item.url))
+      );
       return items;
     }
 
-    const response = await fetch(`${BASE_URL}?limit=1350&offset=0`);
-    
+    const response = await fetch(`${BASE_URL}?limit=500&offset=0`);
+
     if (!response.ok) {
       throw new Error('Failed to fetch data');
     }
-    
+
     const data: { results: PokemonResponse[] } = await response.json();
-    console.log(data);
-  
-    const items: Pokemon[] = await Promise.all(data.results.map(async(item) => await fetchPokemonData(item.url)));
-    const filteredIems = items.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const items: Pokemon[] = await Promise.all(
+      data.results.map(async (item) => await fetchPokemonData(item.url))
+    );
+    const filteredIems = items.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return filteredIems;
-
-
-
   } catch (error) {
     console.error('Failed to fetch data:', error);
     throw error;
-  } 
+  }
 };
 
-const fetchPokemonData = async(url: string): Promise<Pokemon> => {
+const fetchPokemonData = async (url: string): Promise<Pokemon> => {
   const response = await fetch(url);
   const data: PokemonData = await response.json();
 
@@ -53,5 +57,6 @@ const fetchPokemonData = async(url: string): Promise<Pokemon> => {
     height: data.height,
     weight: data.weight,
     image: data.sprites.front_default,
-  }
-}
+    abilities: data.abilities.map((item) => item.ability.name),
+  };
+};
