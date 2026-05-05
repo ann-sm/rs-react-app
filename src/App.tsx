@@ -21,23 +21,15 @@ class App extends Component {
     this.setState({
       isLoading: true,
     });
-    try {
-      const data = await fetchPokemonList(searchQuery, 25, 0);
 
-      if (!data) {
-        throw new Error('Failed to fetch data');
-      }
-
-      setTimeout(() => {
-        this.setState({
-          isLoading: false,
-          pokemons: data,
-        });
-      }, 500);
-      return data;
-    } catch (error) {
-      console.error(`${error}`);
-    }
+    const data = await fetchPokemonList(searchQuery, 1);
+    setTimeout(() => {
+      this.setState({
+        isLoading: false,
+        pokemons: data,
+      });
+    }, 500);
+    return data;
   };
 
   handleSearch = (searchQuery: string) => {

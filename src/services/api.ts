@@ -4,47 +4,49 @@ const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
 
 export const fetchPokemonList = async (
   searchQuery: string,
-  limit: number,
-  offset: number
+  page: number
 ): Promise<Pokemon[]> => {
-  try {
-    if (!searchQuery) {
-      const response = await fetch(
-        `${BASE_URL}?limit=${limit}&offset=${offset}`
-      );
+  const limit = 25;
+  const offset = (page - 1) * limit;
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-
-      const data: { results: PokemonResponse[] } = await response.json();
-
-      const items: Pokemon[] = await Promise.all(
-        data.results.map(async (item) => await fetchPokemonData(item.url))
-      );
-      return items;
-    }
-
-    const response = await fetch(`${BASE_URL}?limit=500&offset=0`);
-
+  if (!searchQuery) {
+    const response = await fetch(`${BASE_URL}?limit=${limit}&offset=${offset}`);
     if (!response.ok) {
-      throw new Error('Failed to fetch data');
+      if (response.status >= 400) {
+        throw new Error('Client error. Try again later.');
+      }
+      if (response.status >= 500) {
+        throw new Error('Server error. Try again later.');
+      }
     }
-
     const data: { results: PokemonResponse[] } = await response.json();
-
     const items: Pokemon[] = await Promise.all(
       data.results.map(async (item) => await fetchPokemonData(item.url))
     );
-    const filteredIems = items.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    return filteredIems;
-  } catch (error) {
-    console.error('Failed to fetch data:', error);
-    throw error;
+    return items;
   }
+  // TO-DO
+  const response = await fetch(`${BASE_URL}?limit=500&offset=0`);
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(`Pokemon ${searchQuery} not found. Try different name.`);
+    }
+    if (response.status >= 400) {
+      throw new Error('Client error. Try again later.');
+    }
+    if (response.status >= 500) {
+      throw new Error('Server error. Try again later.');
+    }
+    throw new Error('Failed to fetch data');
+  }
+  const data: { results: PokemonResponse[] } = await response.json();
+  const items: Pokemon[] = await Promise.all(
+    data.results.map(async (item) => await fetchPokemonData(item.url))
+  );
+  const filteredIems = items.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  return filteredIems;
 };
 
 const fetchPokemonData = async (url: string): Promise<Pokemon> => {
