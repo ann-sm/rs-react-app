@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export interface PokemonResponse {
   name: string;
   url: string;
@@ -30,6 +32,7 @@ export interface AppState {
   pokemons: Pokemon[];
   savedQuery: string;
   isLoading: boolean;
+  hasError: boolean;
 }
 
 export interface CardListProps {
@@ -48,4 +51,14 @@ export interface SearchProps {
 
 export interface SearchState {
   searchQuery: string;
+}
+
+export interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+export interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
 }

@@ -14,21 +14,24 @@ class CardList extends Component<CardListProps> {
             <div className="absolute left-0 top-1/2 h-1 w-full -translate-y-1/2 bg-black"></div>
           </div>
         </div>
-      )
+      );
     }
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-6">
-      {pokemons.length === 0 ?(
-        <div className="col-span-full flex justify-center items-center">
-          <p className="text-gray-500 text-lg font-medium">No pokemons found. Try something different!</p>
-        </div>      ) : (
-        <>
-          {pokemons.map((item) => {
-            return <Card key={item.id} data={item} />;
-          })}
-        </>
-      )}
+        {pokemons.length === 0 ? (
+          <div className="col-span-full flex justify-center items-center">
+            <p className="text-gray-500 text-lg font-medium">
+              No pokemons found. Try something different!
+            </p>
+          </div>
+        ) : (
+          <>
+            {pokemons.map((item) => {
+              return <Card key={item.id} data={item} />;
+            })}
+          </>
+        )}
       </div>
     );
   }

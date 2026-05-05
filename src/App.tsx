@@ -10,6 +10,7 @@ class App extends Component {
     pokemons: [],
     savedQuery: localStorage.getItem('ann-sm-pokemons') || '',
     isLoading: false,
+    hasError: false,
   };
 
   componentDidMount(): void {
@@ -19,7 +20,7 @@ class App extends Component {
   fetchData = async (searchQuery: string) => {
     this.setState({
       isLoading: true,
-    })
+    });
     try {
       const data = await fetchPokemonList(searchQuery, 25, 0);
 
@@ -53,14 +54,30 @@ class App extends Component {
   };
 
   render() {
+    if (this.state.hasError) {
+      throw new Error('Ask Pikachu what we should do...');
+    }
     return (
       <div className="flex flex-col min-h-screen bg-gray-100">
         <Search
           initialValue={this.state.savedQuery}
           onSearch={this.handleSearch}
         />
-        <main className="flex flex-1 items-center justify-center mx-auto px-4 py-8">
-          <CardList pokemons={this.state.pokemons} isLoading={this.state.isLoading}/>
+        <main className="flex flex-col flex-1 items-center justify-center mx-auto px-4 py-8">
+          <CardList
+            pokemons={this.state.pokemons}
+            isLoading={this.state.isLoading}
+          />
+          <button
+            className="bg-yellow-500 text-white font-mono px-6 py-3 mt-12 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
+            onClick={() => {
+              this.setState({
+                hasError: true,
+              });
+            }}
+          >
+            Error Button
+          </button>
         </main>
       </div>
     );
