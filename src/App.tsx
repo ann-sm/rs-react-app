@@ -9,6 +9,7 @@ class App extends Component {
   state: AppState = {
     pokemons: [],
     savedQuery: localStorage.getItem('ann-sm-pokemons') || '',
+    isLoading: false,
   };
 
   componentDidMount(): void {
@@ -16,6 +17,9 @@ class App extends Component {
   }
 
   fetchData = async (searchQuery: string) => {
+    this.setState({
+      isLoading: true,
+    })
     try {
       const data = await fetchPokemonList(searchQuery, 25, 0);
 
@@ -23,9 +27,12 @@ class App extends Component {
         throw new Error('Failed to fetch data');
       }
 
-      this.setState({
-        pokemons: data,
-      });
+      setTimeout(() => {
+        this.setState({
+          isLoading: false,
+          pokemons: data,
+        });
+      }, 500);
       return data;
     } catch (error) {
       console.error(`${error}`);
@@ -42,19 +49,18 @@ class App extends Component {
       this.setState({ savedQuery: trimmedSearch }, () => {
         this.fetchData(trimmedSearch);
       });
-      console.log('new request');
     }
   };
 
   render() {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="flex flex-col min-h-screen bg-gray-100">
         <Search
           initialValue={this.state.savedQuery}
           onSearch={this.handleSearch}
         />
-        <main className="container mx-auto px-4 py-8">
-          <CardList pokemons={this.state.pokemons} />
+        <main className="flex flex-1 items-center justify-center mx-auto px-4 py-8">
+          <CardList pokemons={this.state.pokemons} isLoading={this.state.isLoading}/>
         </main>
       </div>
     );

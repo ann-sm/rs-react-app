@@ -29,10 +29,12 @@ export interface Pokemon extends Omit<PokemonData, 'sprites' | 'abilities'> {
 export interface AppState {
   pokemons: Pokemon[];
   savedQuery: string;
+  isLoading: boolean;
 }
 
 export interface CardListProps {
   pokemons: Pokemon[];
+  isLoading: boolean;
 }
 
 export interface CardProps {
