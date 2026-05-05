@@ -33,19 +33,27 @@ class App extends Component {
   };
 
   handleSearch = (searchQuery: string) => {
-    const newQuery = searchQuery.trim();
-    localStorage.setItem('ann-sm-pokemons', newQuery);
-    this.fetchData(newQuery);
+    const trimmedSearch = searchQuery.trim();
+    const previousSearch = this.state.savedQuery;
+
+    if (trimmedSearch !== previousSearch) {
+      localStorage.setItem('ann-sm-pokemons', trimmedSearch);
+
+      this.setState({ savedQuery: trimmedSearch }, () => {
+        this.fetchData(trimmedSearch);
+      });
+      console.log('new request');
+    }
   };
 
   render() {
     return (
-      <div className='min-h-screen bg-gray-100'>
+      <div className="min-h-screen bg-gray-100">
         <Search
           initialValue={this.state.savedQuery}
           onSearch={this.handleSearch}
         />
-        <main className='container mx-auto px-4 py-8'>
+        <main className="container mx-auto px-4 py-8">
           <CardList pokemons={this.state.pokemons} />
         </main>
       </div>
