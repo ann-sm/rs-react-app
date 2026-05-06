@@ -1,1 +1,1 @@
-# react-rsschool
+# React Class Components
