@@ -29,7 +29,7 @@ class Search extends Component<SearchProps, SearchState> {
     return (
       <header className="bg-teal-700 shadow-lg">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-black text-yellow-400 uppercase text-center mb-6 tracking-wider [text-shadow:2px_2px_0_rgb(185_28_28)]">
+          <h1 className="text-4xl font-logo font-black text-yellow-400 uppercase text-center mb-6 tracking-wider [text-shadow:2px_2px_0_rgb(185_28_28)]">
             PokéSearch
           </h1>
           <form
@@ -44,12 +44,12 @@ class Search extends Component<SearchProps, SearchState> {
               name="search"
               value={this.state.searchQuery}
               onChange={this.handleInputChange}
-              placeholder="Search..."
-              className="flex-1 px-4 py-3 rounded-bl-lg rounded-tl-lg bg-white border-2 border-transparent focus:border-yellow-400 focus:outline-none text-gray-800 placeholder-gray-400"
+              placeholder="Enter a pokemon name..."
+              className="flex-1 px-4 py-3 rounded-bl-lg font-mono rounded-tl-lg bg-white border-2 border-transparent focus:border-yellow-400 focus:outline-none text-gray-800 placeholder-gray-400"
             ></input>
             <button
               type="submit"
-              className="bg-yellow-500 text-white font-mono px-6 py-3 rounded-br-lg rounded-tr-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
+              className="bg-yellow-500 text-white font-mono text-lg px-6 py-3 rounded-br-lg rounded-tr-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
             >
               Search
             </button>

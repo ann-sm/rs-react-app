@@ -61,7 +61,7 @@ class App extends Component {
             isLoading={this.state.isLoading}
           />
           <button
-            className="bg-yellow-500 text-white font-mono px-6 py-3 mt-12 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
+            className="bg-yellow-500 text-white font-mono text-lg px-6 py-3 mt-12 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
             onClick={() => {
               this.setState({
                 hasError: true,

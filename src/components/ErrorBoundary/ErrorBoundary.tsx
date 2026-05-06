@@ -20,12 +20,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       return (
         <div className="flex flex-col min-h-screen bg-gray-100">
           <div className="flex flex-col flex-1 items-center justify-center">
-            <h1 className="text-3xl font-mono uppercase text-teal-700">
+            <h1 className="text-4xl font-mono uppercase text-teal-700">
               Something went very wrong
             </h1>
-            <p className="text-m font-mono p-6">{this.state.error?.message}</p>
+            <p className="text-xl font-mono p-6">{this.state.error?.message}</p>
             <button
-              className="bg-yellow-500 text-white font-mono px-6 py-3 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
+              className="bg-yellow-500 text-white font-mono  text-lg px-6 py-3 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
               onClick={() => this.setState({ hasError: false })}
             >
               Fix it

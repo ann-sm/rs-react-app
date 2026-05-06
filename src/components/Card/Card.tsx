@@ -14,16 +14,16 @@ class Card extends Component<CardProps> {
           ></img>
         </div>
         <div className="p-4">
-          <h3 className="text-lg font-bold text-teal-700 capitalize mb-2">
+          <h3 className="text-xl font-accent font-bold text-teal-700 capitalize mb-2">
             {name}
           </h3>
-          <p className="font-mono text-sm font-semibold text-gray-600 mb-1">
+          <p className="font-mono text-md font-bold text-gray-600 mb-1">
             {abilities.join(',')}
           </p>
-          <p className="font-mono text-sm text-gray-600 mb-1">
+          <p className="font-mono text-md text-gray-600 mb-1">
             height: {height}
           </p>
-          <p className="font-mono text-sm text-gray-600">weight: {weight}</p>
+          <p className="font-mono text-md text-gray-600">weight: {weight}</p>
         </div>
       </article>
     );
