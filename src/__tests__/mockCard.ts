@@ -1,4 +1,4 @@
-import type { CardProps } from "../types";
+import type { CardProps } from '../types';
 
 export const mockCard: CardProps = {
   data: {
@@ -6,10 +6,11 @@ export const mockCard: CardProps = {
     name: 'Ivysaur',
     height: 10,
     weight: 100,
-    image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/2.png',
+    image:
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/2.png',
     abilities: ['overgrow', 'chlorophyll'],
-  }
-}
+  },
+};
 
 export const CardPropsMissing: CardProps = {
   data: {
@@ -18,6 +19,6 @@ export const CardPropsMissing: CardProps = {
     height: 10,
     weight: 100,
     image: '',
-    abilities: []
-  }
-}
+    abilities: [],
+  },
+};
