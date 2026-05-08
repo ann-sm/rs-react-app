@@ -13,14 +13,11 @@ export interface PokemonData {
   sprites: {
     front_default: string;
   };
-  abilities: Array<{
+  abilities: {
     ability: {
       name: string;
-      url: string;
     };
-    is_hidden: boolean;
-    slot: number;
-  }>;
+  }[];
 }
 
 export interface Pokemon extends Omit<PokemonData, 'sprites' | 'abilities'> {
@@ -36,7 +33,7 @@ export interface AppState {
 }
 
 export interface CardListProps {
-  pokemons: Pokemon[];
+  pokemons: CardProps[];
   isLoading: boolean;
 }
 
