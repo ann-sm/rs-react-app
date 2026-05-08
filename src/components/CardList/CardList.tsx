@@ -28,7 +28,7 @@ class CardList extends Component<CardListProps> {
         ) : (
           <>
             {pokemons.map((item) => {
-              return <Card key={item.data.id} data={item.data} />;
+              return <Card key={item.id} data={item} />;
             })}
           </>
         )}

@@ -33,7 +33,7 @@ export interface AppState {
 }
 
 export interface CardListProps {
-  pokemons: CardProps[];
+  pokemons: Pokemon[];
   isLoading: boolean;
 }
 
