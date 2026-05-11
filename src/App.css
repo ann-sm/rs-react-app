@@ -8,7 +8,7 @@ html {
 }
 
 @theme {
-  --font-logo: "Cherry Bomb One", system-ui;
-  --font-mono: "Inconsolata", system-ui;
-  --font-accent: "Space Grotesk", system-ui;
+  --font-logo: 'Cherry Bomb One', system-ui;
+  --font-mono: 'Inconsolata', system-ui;
+  --font-accent: 'Space Grotesk', system-ui;
 }

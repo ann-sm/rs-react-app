@@ -1,0 +1,93 @@
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { fetchPokemonList } from './services/api';
+import App from './App';
+import { mockData } from './__tests__/mocks';
+import userEvent from '@testing-library/user-event';
+
+vi.mock('./services/api', () => ({
+  fetchPokemonList: vi.fn(),
+}));
+
+describe('App', () => {
+  const user = userEvent.setup();
+
+  beforeEach(() => {
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it('makes initial API call on component mount', async () => {
+    vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
+
+    render(<App />);
+
+    expect(fetchPokemonList).toHaveBeenCalledWith('', 1);
+    await waitFor(() => {
+      expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
+      expect(screen.getByText('Charmander')).toBeInTheDocument();
+    });
+  });
+
+  it('handles search term from localStorage on initial load', async () => {
+    localStorage.setItem('ann-sm-pokemons', 'Bulbasaur');
+
+    render(<App />);
+
+    await waitFor(() => {
+      vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
+      expect(fetchPokemonList).toHaveBeenCalledWith('Bulbasaur', 1);
+    });
+
+    expect(screen.getByDisplayValue('Bulbasaur')).toBeInTheDocument();
+  });
+
+  it('saves search term to localStorage and updates state on search', async () => {
+    render(<App />);
+    const input = screen.getByRole('searchbox');
+    const button = screen.getByRole('button', { name: 'Search' });
+
+    await user.type(input, 'charmander');
+    await user.click(button);
+
+    await waitFor(() => {
+      expect(localStorage.getItem('ann-sm-pokemons')).toBe('charmander');
+      expect(screen.getByDisplayValue('charmander')).toBeInTheDocument();
+    });
+  });
+
+  it('manages loading states during API calls', async () => {
+    let resolvePromise: (value: typeof mockData) => void;
+    const promise = new Promise<typeof mockData>((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    vi.mocked(fetchPokemonList).mockReturnValue(promise);
+
+    render(<App />);
+
+    expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
+    expect(screen.queryByText('Charmander')).not.toBeInTheDocument();
+
+    resolvePromise!(mockData);
+
+    await waitFor(() => {
+      expect(document.querySelector('.animate-spin')).not.toBeInTheDocument();
+      expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
+      expect(screen.getByText('Charmander')).toBeInTheDocument();
+    });
+  });
+
+  it('calls API with correct parameters after search', async () => {
+    render(<App />);
+    const input = screen.getByRole('searchbox');
+    const button = screen.getByRole('button', { name: 'Search' });
+
+    await user.type(input, 'bulbasaur');
+    await user.click(button);
+    await waitFor(() => {
+      expect(fetchPokemonList).toHaveBeenCalledWith('bulbasaur', 1);
+    });
+  });
+});
