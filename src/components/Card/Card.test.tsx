@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Card from './Card';
-import { CardPropsMissing, mockCard } from '../../__tests__/mockCard';
+import { CardPropsMissing, mockCard } from '../../__tests__/mocks';
 
 describe('Card', () => {
   it('renders item name correctly', () => {
     render(<Card data={mockCard.data} />);
-    expect(screen.getByText('Ivysaur')).toBeInTheDocument();
+    expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
   });
 
   it('renders item description corectly', () => {

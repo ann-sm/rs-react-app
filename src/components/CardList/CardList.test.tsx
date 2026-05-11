@@ -1,10 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import CardList from './CardList';
-import {
-  mockCardList,
-  mockCardListPropsMissing,
-} from '../../__tests__/mockCardList';
+import { mockCardList, mockCardListPropsMissing } from '../../__tests__/mocks';
 
 describe('CardList', () => {
   it('renders correct number of items', () => {

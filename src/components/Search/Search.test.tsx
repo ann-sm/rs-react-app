@@ -40,9 +40,9 @@ describe('Search', () => {
     render(<Search initialValue="" onSearch={() => {}} />);
     const input = screen.getByRole('searchbox');
 
-    await user.type(input, 'test input update');
+    await user.type(input, 'bulbasaur');
 
-    expect(input).toHaveValue('test input update');
+    expect(input).toHaveValue('bulbasaur');
   });
 
   it('triggers onSearch with entered value when search button is clicked', async () => {
@@ -51,10 +51,10 @@ describe('Search', () => {
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
-    await user.type(input, 'test onSearch');
+    await user.type(input, 'charmander');
     await user.click(button);
 
-    expect(onSearch).toHaveBeenCalledWith('test onSearch');
+    expect(onSearch).toHaveBeenCalledWith('charmander');
   });
 
   it('does not trigger onSearch if entered value equals to previous search value', async () => {

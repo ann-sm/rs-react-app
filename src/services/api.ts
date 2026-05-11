@@ -12,11 +12,11 @@ export const fetchPokemonList = async (
   if (!searchQuery) {
     const response = await fetch(`${BASE_URL}?limit=${limit}&offset=${offset}`);
     if (!response.ok) {
-      if (response.status >= 400) {
-        throw new Error('Client error. Try again later.');
-      }
       if (response.status >= 500) {
         throw new Error('Server error. Try again later.');
+      }
+      if (response.status >= 400) {
+        throw new Error('Client error. Try again later.');
       }
     }
     const data: { results: PokemonResponse[] } = await response.json();
@@ -25,19 +25,15 @@ export const fetchPokemonList = async (
     );
     return items;
   }
-  // TO-DO
+  // TO-DO: optimize search by name and add pagination OR switch back to fetch by pokemon id or name
   const response = await fetch(`${BASE_URL}?limit=500&offset=0`);
   if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error(`Pokemon ${searchQuery} not found. Try different name.`);
+    if (response.status >= 500) {
+      throw new Error('Server error. Try again later.');
     }
     if (response.status >= 400) {
       throw new Error('Client error. Try again later.');
     }
-    if (response.status >= 500) {
-      throw new Error('Server error. Try again later.');
-    }
-    throw new Error('Failed to fetch data');
   }
   const data: { results: PokemonResponse[] } = await response.json();
   const items: Pokemon[] = await Promise.all(
