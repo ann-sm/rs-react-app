@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import type { SearchProps, SearchState } from '../../types';
+import { Link } from 'react-router-dom';
 
 class Search extends Component<SearchProps, SearchState> {
   constructor(props: SearchProps) {
@@ -32,6 +33,7 @@ class Search extends Component<SearchProps, SearchState> {
           <h1 className="text-4xl font-logo font-black text-yellow-400 uppercase text-center mb-6 tracking-wider [text-shadow:2px_2px_0_rgb(185_28_28)]">
             PokéSearch
           </h1>
+          <Link to={'about'}>About</Link>
           <form
             onSubmit={(event: React.SubmitEvent<HTMLFormElement>) => {
               event.preventDefault();
