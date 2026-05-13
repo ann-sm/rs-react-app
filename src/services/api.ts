@@ -1,12 +1,13 @@
 import type { Pokemon, PokemonData, PokemonResponse } from '../types';
 
 const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
+const ITEMS_ON_PAGE = 25;
 
 export const fetchPokemonList = async (
   searchQuery: string,
   page: number
-): Promise<Pokemon[]> => {
-  const limit = 25;
+): Promise<{ items: Pokemon[]; itemsTotal: number }> => {
+  const limit = ITEMS_ON_PAGE;
   const offset = (page - 1) * limit;
 
   if (!searchQuery) {
@@ -19,13 +20,15 @@ export const fetchPokemonList = async (
         throw new Error('Client error. Try again later.');
       }
     }
-    const data: { results: PokemonResponse[] } = await response.json();
+    const data: { results: PokemonResponse[]; count: number } =
+      await response.json();
     const items: Pokemon[] = await Promise.all(
       data.results.map(async (item) => await fetchPokemonData(item.url))
     );
-    return items;
+    const itemsTotal = data.count;
+    return { items, itemsTotal };
   }
-  // TO-DO: optimize search by name and add pagination OR switch back to fetch by pokemon id or name
+  // TO-DO: optimize search by name
   const response = await fetch(`${BASE_URL}?limit=500&offset=0`);
   if (!response.ok) {
     if (response.status >= 500) {
@@ -39,10 +42,12 @@ export const fetchPokemonList = async (
   const items: Pokemon[] = await Promise.all(
     data.results.map(async (item) => await fetchPokemonData(item.url))
   );
-  const filteredIems = items.filter((item) =>
+  const filteredItemsAll = items.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  return filteredIems;
+  const filteredItems = filteredItemsAll.slice(offset, offset + limit);
+
+  return { items: filteredItems, itemsTotal: filteredItemsAll.length };
 };
 
 const fetchPokemonData = async (url: string): Promise<Pokemon> => {

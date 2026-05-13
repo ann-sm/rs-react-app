@@ -59,3 +59,10 @@ export interface ErrorBoundaryState {
   hasError: boolean;
   error?: Error;
 }
+
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPrevPage: (currentPage: number) => void;
+  onNextPage: (currentPage: number) => void;
+}
