@@ -1,12 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import Header from '../Header/Header';
+import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 
 function Layout() {
   return (
-    <div>
+    <ErrorBoundary>
       <Header />
       <Outlet />
-    </div>
+    </ErrorBoundary>
   );
 }
 
