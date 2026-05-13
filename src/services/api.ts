@@ -28,7 +28,7 @@ export const fetchPokemonList = async (
     const itemsTotal = data.count;
     return { items, itemsTotal };
   }
-  // TO-DO: optimize search by name
+  // Search by name
   const response = await fetch(`${BASE_URL}?limit=1350&offset=0`);
   if (!response.ok) {
     if (response.status >= 500) {

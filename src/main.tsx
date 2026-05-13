@@ -7,32 +7,40 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import About from './pages/About/About.tsx';
 import NotFound from './pages/NotFound/NotFound.tsx';
 import Details from './pages/Details/Details.tsx';
+import Layout from './components/Layout/Layout.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    ),
+    Component: Layout,
     errorElement: <NotFound />,
     children: [
       {
-        path: 'details',
-        element: <Details />,
+        path: '/',
+        Component: App,
+        children: [
+          {
+            path: 'details/:id',
+            Component: Details,
+          },
+        ],
+      },
+      {
+        path: 'about',
+        Component: About,
+      },
+      {
+        path: '404',
+        Component: NotFound,
       },
     ],
-  },
-  {
-    path: 'about',
-    element: <About />,
-    errorElement: <NotFound />,
   },
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
   </StrictMode>
 );

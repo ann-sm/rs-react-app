@@ -6,14 +6,19 @@ import { fetchPokemonList } from './services/api';
 import Search from './components/Search/Search';
 import useLocalStorage from './hooks/useLocalStorage';
 import Pagination from './components/Pagination/Pagination';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [savedQuery, setSavedQuery] = useLocalStorage();
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const page = Number(searchParams.get('page') || '1');
 
   useEffect(() => {
     async function fetchData() {
@@ -35,8 +40,12 @@ function App() {
 
     if (trimmedSearch !== previousSearch) {
       setSavedQuery(trimmedSearch);
-      setPage(1);
+      navigate('/?page=1');
     }
+  }
+
+  function handlePageChange(page: number) {
+    navigate(`/?page=${page}`);
   }
 
   if (hasError) {
@@ -48,12 +57,14 @@ function App() {
       <Search initialValue={savedQuery} onSearch={handleSearch} />
       <main className="flex flex-col flex-1 items-center justify-center mx-auto px-4 py-8">
         <CardList pokemons={pokemons} isLoading={isLoading} />
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPrevPage={() => setPage(page - 1)}
-          onNextPage={() => setPage(page + 1)}
-        />
+        {!isLoading && pokemons.length > 0 && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPrevPage={() => handlePageChange(page - 1)}
+            onNextPage={() => handlePageChange(page + 1)}
+          />
+        )}
         <button
           className="bg-yellow-500 text-white font-mono text-lg px-6 py-3 mt-12 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
           onClick={() => {
