@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import type { SearchProps } from '../../types';
 import { Link } from 'react-router-dom';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 function Search({ initialValue, onSearch }: SearchProps) {
   const [searchQuery, setSearchQuery] = useState(initialValue);
+  const [savedQuery] = useLocalStorage();
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchQuery(event.target.value);
@@ -11,12 +13,11 @@ function Search({ initialValue, onSearch }: SearchProps) {
 
   function handleInputSubmit() {
     const trimmedSearch = searchQuery.trim();
-    const previousSearch = localStorage.getItem('ann-sm-pokemons');
 
     if (trimmedSearch !== searchQuery) {
       setSearchQuery(trimmedSearch);
     }
-    if (trimmedSearch !== previousSearch) {
+    if (trimmedSearch !== savedQuery) {
       onSearch(trimmedSearch);
     }
   }

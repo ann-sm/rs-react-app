@@ -4,12 +4,11 @@ import CardList from './components/CardList/CardList';
 import type { Pokemon } from './types';
 import { fetchPokemonList } from './services/api';
 import Search from './components/Search/Search';
+import useLocalStorage from './hooks/useLocalStorage';
 
 function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [savedQuery, setSavedQuery] = useState(
-    localStorage.getItem('ann-sm-pokemons') || ''
-  );
+  const [savedQuery, setSavedQuery] = useLocalStorage();
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -31,7 +30,6 @@ function App() {
     const previousSearch = savedQuery;
 
     if (trimmedSearch !== previousSearch) {
-      localStorage.setItem('ann-sm-pokemons', trimmedSearch);
       setSavedQuery(trimmedSearch);
     }
   }
