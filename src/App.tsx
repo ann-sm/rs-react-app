@@ -35,6 +35,7 @@ function App() {
 
     if (trimmedSearch !== previousSearch) {
       setSavedQuery(trimmedSearch);
+      setPage(1);
     }
   }
 

@@ -29,7 +29,7 @@ export const fetchPokemonList = async (
     return { items, itemsTotal };
   }
   // TO-DO: optimize search by name
-  const response = await fetch(`${BASE_URL}?limit=500&offset=0`);
+  const response = await fetch(`${BASE_URL}?limit=1350&offset=0`);
   if (!response.ok) {
     if (response.status >= 500) {
       throw new Error('Server error. Try again later.');
@@ -39,15 +39,16 @@ export const fetchPokemonList = async (
     }
   }
   const data: { results: PokemonResponse[] } = await response.json();
-  const items: Pokemon[] = await Promise.all(
-    data.results.map(async (item) => await fetchPokemonData(item.url))
-  );
-  const filteredItemsAll = items.filter((item) =>
+  const filteredData = data.results.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const filteredItems = filteredItemsAll.slice(offset, offset + limit);
+  const paginatedData = filteredData.slice(offset, offset + limit);
 
-  return { items: filteredItems, itemsTotal: filteredItemsAll.length };
+  const pokemons: Pokemon[] = await Promise.all(
+    paginatedData.map(async (item) => await fetchPokemonData(item.url))
+  );
+
+  return { items: pokemons, itemsTotal: filteredData.length };
 };
 
 const fetchPokemonData = async (url: string): Promise<Pokemon> => {
