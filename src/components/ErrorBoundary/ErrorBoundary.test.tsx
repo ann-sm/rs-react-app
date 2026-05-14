@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import ErrorBoundary from './ErrorBoundary';
 import userEvent from '@testing-library/user-event';
 import App from '../../App';
+import { MemoryRouter } from 'react-router-dom';
 
 const ThrowError = () => {
   throw new Error('Test Error');
@@ -23,9 +24,11 @@ describe('ErrorBoundary', () => {
 
   it('catches and handles JavaScript errors in child components', () => {
     render(
-      <ErrorBoundary>
-        <ThrowError />
-      </ErrorBoundary>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <ThrowError />
+        </ErrorBoundary>
+      </MemoryRouter>
     );
     expect(screen.getByText('Something went very wrong')).toBeInTheDocument();
     expect(screen.getByText('Test Error')).toBeInTheDocument();
@@ -33,9 +36,11 @@ describe('ErrorBoundary', () => {
 
   it('displays fallback UI when error occurs', () => {
     render(
-      <ErrorBoundary>
-        <ThrowError />
-      </ErrorBoundary>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <ThrowError />
+        </ErrorBoundary>
+      </MemoryRouter>
     );
 
     expect(
@@ -46,9 +51,11 @@ describe('ErrorBoundary', () => {
 
   it('logs error to console', () => {
     render(
-      <ErrorBoundary>
-        <ThrowError />
-      </ErrorBoundary>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <ThrowError />
+        </ErrorBoundary>
+      </MemoryRouter>
     );
 
     expect(consoleErrorSpy).toHaveBeenCalled();
@@ -56,9 +63,11 @@ describe('ErrorBoundary', () => {
 
   it('throws error when test button is clicked', async () => {
     render(
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </MemoryRouter>
     );
 
     const errorButton = screen.getByRole('button', { name: 'Error Button' });
@@ -81,9 +90,11 @@ describe('ErrorBoundary', () => {
     };
 
     const { rerender } = render(
-      <ErrorBoundary>
-        <TestComponent />
-      </ErrorBoundary>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <TestComponent />
+        </ErrorBoundary>
+      </MemoryRouter>
     );
 
     expect(screen.queryByText('Something went very wrong')).toBeInTheDocument();
@@ -94,16 +105,19 @@ describe('ErrorBoundary', () => {
     await user.click(fixButton);
 
     rerender(
-      <ErrorBoundary>
-        <TestComponent />
-      </ErrorBoundary>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <TestComponent />
+        </ErrorBoundary>
+      </MemoryRouter>
     );
 
-    const h1 = screen.getByRole('heading', { level: 1 });
-
-    expect(h1).toHaveTextContent('PokéSearch');
-    expect(
-      screen.queryByText('Something went very wrong')
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      const input = screen.getByPlaceholderText('Enter a pokemon name...');
+      expect(input).toBeInTheDocument();
+      expect(
+        screen.queryByText('Something went very wrong')
+      ).not.toBeInTheDocument();
+    });
   });
 });

@@ -4,6 +4,7 @@ import { fetchPokemonList } from './services/api';
 import App from './App';
 import { mockData } from './__tests__/mocks';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('./services/api', () => ({
   fetchPokemonList: vi.fn(),
@@ -20,7 +21,11 @@ describe('App', () => {
   it('makes initial API call on component mount', async () => {
     vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
 
-    render(<App />);
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
 
     expect(fetchPokemonList).toHaveBeenCalledWith('', 1);
     await waitFor(() => {
@@ -32,7 +37,11 @@ describe('App', () => {
   it('handles search term from localStorage on initial load', async () => {
     localStorage.setItem('ann-sm-pokemons', 'Bulbasaur');
 
-    render(<App />);
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
 
     await waitFor(() => {
       vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
@@ -43,7 +52,11 @@ describe('App', () => {
   });
 
   it('saves search term to localStorage and updates state on search', async () => {
-    render(<App />);
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -64,7 +77,11 @@ describe('App', () => {
 
     vi.mocked(fetchPokemonList).mockReturnValue(promise);
 
-    render(<App />);
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
 
     expect(document.querySelector('.animate-spin')).toBeInTheDocument();
     expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
@@ -80,7 +97,11 @@ describe('App', () => {
   });
 
   it('calls API with correct parameters after search', async () => {
-    render(<App />);
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 

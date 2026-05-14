@@ -2,36 +2,49 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import CardList from './CardList';
 import { mockCardList, mockCardListPropsMissing } from '../../__tests__/mocks';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('CardList', () => {
   it('renders correct number of items', () => {
     render(
-      <CardList
-        pokemons={mockCardList.pokemons}
-        isLoading={mockCardList.isLoading}
-      />
+      <MemoryRouter>
+        <CardList
+          pokemons={mockCardList.pokemons}
+          isLoading={mockCardList.isLoading}
+        />
+      </MemoryRouter>
     );
     const cards = screen.getAllByRole('article');
     expect(cards).toHaveLength(2);
   });
 
   it('displays no results message when array is empty', () => {
-    render(<CardList pokemons={[]} isLoading={mockCardList.isLoading} />);
+    render(
+      <MemoryRouter>
+        <CardList pokemons={[]} isLoading={mockCardList.isLoading} />
+      </MemoryRouter>
+    );
     expect(screen.getByText(/No pokemons found/i)).toBeInTheDocument();
   });
 
   it('shows loading state while fetching data', () => {
-    render(<CardList pokemons={mockCardList.pokemons} isLoading={true} />);
+    render(
+      <MemoryRouter>
+        <CardList pokemons={mockCardList.pokemons} isLoading={true} />
+      </MemoryRouter>
+    );
     const spinner = document.querySelector('.animate-spin');
     expect(spinner).toBeInTheDocument();
   });
 
   it('correctly displays item names and descriptions', () => {
     render(
-      <CardList
-        pokemons={mockCardList.pokemons}
-        isLoading={mockCardList.isLoading}
-      />
+      <MemoryRouter>
+        <CardList
+          pokemons={mockCardList.pokemons}
+          isLoading={mockCardList.isLoading}
+        />
+      </MemoryRouter>
     );
     mockCardList.pokemons.forEach((item) => {
       expect(screen.getByText(item.name)).toBeInTheDocument();
@@ -43,10 +56,12 @@ describe('CardList', () => {
 
   it('handles missing or undefined data gracefully', () => {
     render(
-      <CardList
-        pokemons={mockCardListPropsMissing.pokemons}
-        isLoading={mockCardListPropsMissing.isLoading}
-      />
+      <MemoryRouter>
+        <CardList
+          pokemons={mockCardListPropsMissing.pokemons}
+          isLoading={mockCardListPropsMissing.isLoading}
+        />
+      </MemoryRouter>
     );
     const imageElements = screen.getAllByRole('img');
     const imageURLs = mockCardListPropsMissing.pokemons.map(
@@ -59,9 +74,4 @@ describe('CardList', () => {
       });
     });
   });
-  // it('displays error message when API call fails', () => {
-  // });
-
-  // it('shows appropriate error for different HTTP status codes (4xx, 5xx)', () => {
-  // });
 });
