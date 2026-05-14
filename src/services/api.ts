@@ -1,16 +1,16 @@
 import type { Pokemon, PokemonData, PokemonResponse } from '../types';
 
-const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
-const ITEMS_ON_PAGE = 25;
+export const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
+const ITEMS_ON_PAGE = 20;
 
-export const fetchPokemonList = async (
-  searchQuery: string,
+export async function fetchPokemonList(
+  searchValue: string,
   page: number
-): Promise<{ items: Pokemon[]; itemsTotal: number }> => {
+): Promise<{ items: Pokemon[]; itemsTotal: number }> {
   const limit = ITEMS_ON_PAGE;
   const offset = (page - 1) * limit;
 
-  if (!searchQuery) {
+  if (!searchValue) {
     const response = await fetch(`${BASE_URL}?limit=${limit}&offset=${offset}`);
     if (!response.ok) {
       if (response.status >= 500) {
@@ -40,7 +40,7 @@ export const fetchPokemonList = async (
   }
   const data: { results: PokemonResponse[] } = await response.json();
   const filteredData = data.results.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    item.name.toLowerCase().includes(searchValue.toLowerCase())
   );
   const paginatedData = filteredData.slice(offset, offset + limit);
 
@@ -49,9 +49,9 @@ export const fetchPokemonList = async (
   );
 
   return { items: pokemons, itemsTotal: filteredData.length };
-};
+}
 
-const fetchPokemonData = async (url: string): Promise<Pokemon> => {
+export async function fetchPokemonData(url: string): Promise<Pokemon> {
   const response = await fetch(url);
   const data: PokemonData = await response.json();
 
@@ -60,7 +60,9 @@ const fetchPokemonData = async (url: string): Promise<Pokemon> => {
     name: data.name,
     height: data.height,
     weight: data.weight,
-    image: data.sprites.front_default,
+    image: data.sprites.other['official-artwork'].front_default,
     abilities: data.abilities.map((item) => item.ability.name),
+    types: data.types.map((item) => item.type.name),
+    cry: data.cries.latest,
   };
-};
+}

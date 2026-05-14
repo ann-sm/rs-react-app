@@ -11,23 +11,40 @@ export interface PokemonData {
   height: number;
   weight: number;
   sprites: {
-    front_default: string;
+    other: {
+      'official-artwork': {
+        front_default: string;
+      };
+    };
   };
   abilities: {
     ability: {
       name: string;
     };
   }[];
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
+  cries: {
+    latest: string;
+  };
 }
 
-export interface Pokemon extends Omit<PokemonData, 'sprites' | 'abilities'> {
+export interface Pokemon extends Omit<
+  PokemonData,
+  'sprites' | 'abilities' | 'types' | 'cries'
+> {
   image: string;
   abilities: string[];
+  types: string[];
+  cry: string;
 }
 
 export interface AppState {
   pokemons: Pokemon[];
-  savedQuery: string;
+  savedValue: string;
   isLoading: boolean;
   hasError: boolean;
 }
@@ -43,11 +60,7 @@ export interface CardProps {
 
 export interface SearchProps {
   initialValue: string;
-  onSearch: (searchQuery: string) => void;
-}
-
-export interface SearchState {
-  searchQuery: string;
+  onSearch: (searchValue: string) => void;
 }
 
 export interface ErrorBoundaryProps {

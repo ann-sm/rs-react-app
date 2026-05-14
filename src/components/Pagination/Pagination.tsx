@@ -7,7 +7,7 @@ function Pagination({
   onNextPage,
 }: PaginationProps) {
   return (
-    <div className="mt-6">
+    <nav className="mt-6">
       <button
         className="px-4 py-2 bg-teal-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 transition-colors font-mono font-bold hover:cursor-pointer"
         onClick={() => onPrevPage(currentPage)}
@@ -23,7 +23,7 @@ function Pagination({
       >
         &gt;
       </button>
-    </div>
+    </nav>
   );
 }
 

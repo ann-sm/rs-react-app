@@ -3,20 +3,20 @@ import type { SearchProps } from '../../types';
 import useLocalStorage from '../../hooks/useLocalStorage';
 
 function Search({ initialValue, onSearch }: SearchProps) {
-  const [searchQuery, setSearchQuery] = useState(initialValue);
-  const [savedQuery] = useLocalStorage();
+  const [searchValue, setSearchValue] = useState(initialValue);
+  const [savedValue] = useLocalStorage();
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setSearchQuery(event.target.value);
+    setSearchValue(event.target.value);
   }
 
   function handleInputSubmit() {
-    const trimmedSearch = searchQuery.trim();
+    const trimmedSearch = searchValue.trim();
 
-    if (trimmedSearch !== searchQuery) {
-      setSearchQuery(trimmedSearch);
+    if (trimmedSearch !== searchValue) {
+      setSearchValue(trimmedSearch);
     }
-    if (trimmedSearch !== savedQuery) {
+    if (trimmedSearch !== savedValue) {
       onSearch(trimmedSearch);
     }
   }
@@ -27,12 +27,12 @@ function Search({ initialValue, onSearch }: SearchProps) {
         event.preventDefault();
         handleInputSubmit();
       }}
-      className="max-w-2xl min-w-sm mx-auto flex mt-10"
+      className="max-w-2xl min-w-sm mx-auto flex mt-4"
     >
       <input
         type="search"
         name="search"
-        value={searchQuery}
+        value={searchValue}
         onChange={handleInputChange}
         placeholder="Enter a pokemon name..."
         className="flex-1 px-4 py-3 rounded-bl-lg font-mono rounded-tl-lg bg-white border-2 border-transparent focus:border-yellow-400 focus:outline-none text-gray-800 placeholder-gray-400"

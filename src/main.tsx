@@ -19,7 +19,7 @@ const router = createBrowserRouter([
         Component: App,
         children: [
           {
-            path: 'details/:id',
+            path: '/',
             Component: Details,
           },
         ],

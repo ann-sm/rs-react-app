@@ -21,12 +21,12 @@ describe('Search', () => {
   });
 
   it('displays previously saved search term from localStorage', () => {
-    const searchQuery = 'test previous search display';
-    localStorage.setItem('ann-sm-pokemons', searchQuery);
+    const searchValue = 'test previous search display';
+    localStorage.setItem('ann-sm-pokemons', searchValue);
     render(<App />);
     const input = screen.getByRole('searchbox');
 
-    expect(input).toHaveValue(searchQuery);
+    expect(input).toHaveValue(searchValue);
   });
 
   it('shows empty input when no saved term exists', () => {
@@ -58,17 +58,17 @@ describe('Search', () => {
   });
 
   it('does not trigger onSearch if entered value equals to previous search value', async () => {
-    const previousSearchQuery = 'test previous search';
-    localStorage.setItem('ann-sm-pokemons', previousSearchQuery);
+    const savedValue = 'test previous search';
+    localStorage.setItem('ann-sm-pokemons', savedValue);
     const onSearch = vi.fn();
     render(<Search initialValue="" onSearch={onSearch} />);
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
-    await user.type(input, previousSearchQuery);
+    await user.type(input, savedValue);
     await user.click(button);
 
-    expect(onSearch).not.toHaveBeenCalledWith(previousSearchQuery);
+    expect(onSearch).not.toHaveBeenCalledWith(savedValue);
   });
 
   it('trims whitespace from search input before saving', async () => {
