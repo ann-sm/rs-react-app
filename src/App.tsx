@@ -53,7 +53,7 @@ function App() {
   }
 
   return (
-    <main className="flex flex-col min-h-screen bg-gray-100 text-center">
+    <main className="flex flex-col flex-1 bg-gray-100 text-center">
       <Search initialValue={savedValue} onSearch={handleSearch} />
       <section className="flex flex-1">
         <section

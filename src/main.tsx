@@ -28,10 +28,6 @@ const router = createBrowserRouter([
         path: 'about',
         Component: About,
       },
-      {
-        path: '404',
-        Component: NotFound,
-      },
     ],
   },
 ]);

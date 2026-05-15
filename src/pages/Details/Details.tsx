@@ -36,7 +36,7 @@ function Details() {
     <div className="p-4 fixed mr-8 bg-white w-1/4 rounded-lg shadow-md mt-4 text-left">
       <button
         onClick={closeModal}
-        className="absolute top-2 right-4 text-2xl text-gray-500 hover:text-gray-700"
+        className="absolute top-2 right-4 text-2xl text-gray-500 hover:text-gray-700 hover:cursor-pointer"
       >
         ×
       </button>
