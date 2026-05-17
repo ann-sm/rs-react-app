@@ -7,6 +7,7 @@ function Header() {
         <div className="flex justify-end">
           <Link
             to={'about'}
+            aria-label="About"
             className="inline-flex items-center gap-2 text-gray-100 hover:text-yellow-400 transition-colors duration-200 hover:cursor-pointer group"
           >
             <svg

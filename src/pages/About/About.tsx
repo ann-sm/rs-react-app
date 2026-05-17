@@ -49,7 +49,7 @@ function About() {
               as part of the{' '}
               <Link
                 to="https://rs.school/courses/reactjs"
-                target="_blank"
+                target="blank"
                 className="text-yellow-600 hover:text-yellow-700 underline"
               >
                 RS School React Course

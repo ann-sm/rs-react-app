@@ -13,10 +13,6 @@ function Details() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
 
   useEffect(() => {
-    if (!detailsId) {
-      return;
-    }
-
     async function fetchDetails() {
       const data = await fetchPokemonData(`${BASE_URL}/${detailsId}`);
       setPokemon(data);
