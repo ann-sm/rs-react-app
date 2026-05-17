@@ -45,7 +45,10 @@ describe('Card', () => {
         <Card data={CardPropsMissing.data} />
       </MemoryRouter>
     );
-    const image = screen.getByRole('img');
-    expect(image).not.toHaveAttribute('src', mockCard.data.image);
+
+    const images = screen.queryAllByRole('img');
+    expect(images).toHaveLength(0);
+    expect(screen.getByText('No image available')).toBeInTheDocument();
+    expect(screen.getByText('n/a')).toBeInTheDocument();
   });
 });

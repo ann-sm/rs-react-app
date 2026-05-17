@@ -63,15 +63,12 @@ describe('CardList', () => {
         />
       </MemoryRouter>
     );
-    const imageElements = screen.getAllByRole('img');
-    const imageURLs = mockCardListPropsMissing.pokemons.map(
-      (item) => item.image
-    );
+    const imageElements = screen.queryAllByRole('img');
+    expect(imageElements).toHaveLength(0);
 
-    imageElements.forEach((image) => {
-      imageURLs.forEach((url) => {
-        expect(image).not.toHaveAttribute('src', url);
-      });
-    });
+    const noImageElements = screen.getAllByText('No image available');
+    expect(noImageElements).toHaveLength(
+      mockCardListPropsMissing.pokemons.length
+    );
   });
 });

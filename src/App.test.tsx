@@ -6,9 +6,13 @@ import { mockData } from './__tests__/mocks';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('./services/api', () => ({
-  fetchPokemonList: vi.fn(),
-}));
+vi.mock('./services/api', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...(actual as Record<string, unknown>),
+    fetchPokemonList: vi.fn(),
+  };
+});
 
 describe('App', () => {
   const user = userEvent.setup();

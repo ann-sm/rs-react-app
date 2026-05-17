@@ -22,11 +22,9 @@ function Header() {
             </svg>
           </Link>
         </div>
-        <Link to={'/'}>
-          <h1 className="text-4xl font-logo font-black text-yellow-400 uppercase text-center mb-4 tracking-wider [text-shadow:2px_2px_0_rgb(185_28_28)] transition-all duration-300 hover:scale-102">
-            PokéSearch
-          </h1>
-        </Link>
+        <h1 className="text-4xl font-logo font-black text-yellow-400 uppercase text-center mb-4 tracking-wider [text-shadow:2px_2px_0_rgb(185_28_28)] transition-all duration-300 hover:scale-102">
+          <Link to={'/'}>PokéSearch</Link>
+        </h1>
       </div>
     </header>
   );

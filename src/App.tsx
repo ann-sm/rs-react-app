@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import CardList from './components/CardList/CardList';
 import type { Pokemon } from './types';
-import { fetchPokemonList } from './services/api';
+import { fetchPokemonList, ITEMS_ON_PAGE } from './services/api';
 import Search from './components/Search/Search';
 import useLocalStorage from './hooks/useLocalStorage';
 import Pagination from './components/Pagination/Pagination';
@@ -16,10 +16,10 @@ function App() {
   const [totalPages, setTotalPages] = useState(1);
 
   const [searchParams] = useSearchParams();
-  const detailsId = searchParams.get('details');
-  const navigate = useNavigate();
-
   const page = Number(searchParams.get('page') || '1');
+  const detailsId = searchParams.get('details');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchData() {
@@ -27,7 +27,7 @@ function App() {
       try {
         const data = await fetchPokemonList(savedValue, page);
         setPokemons(data.items);
-        setTotalPages(Math.ceil(data.itemsTotal / 25));
+        setTotalPages(Math.ceil(data.itemsTotal / ITEMS_ON_PAGE));
       } finally {
         setIsLoading(false);
       }
@@ -36,10 +36,8 @@ function App() {
   }, [savedValue, page]);
 
   function handleSearch(searchValue: string) {
-    const trimmedSearch = searchValue.trim();
-
-    if (trimmedSearch !== savedValue) {
-      setSavedValue(trimmedSearch);
+    if (searchValue !== savedValue) {
+      setSavedValue(searchValue);
       navigate('/?page=1');
     }
   }

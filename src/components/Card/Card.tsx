@@ -11,22 +11,33 @@ function Card({ data }: CardProps) {
     <Link to={`/?page=${page}&details=${id}`} className="block h-full min-w-0">
       <article className="flex flex-col bg-white rounded-lg shadow-md h-full w-full min-w-0 overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer text-left">
         <div className="relative pb-[100%] bg-linear-to-br from-teal-50 to-blue-50">
-          <img
-            src={image}
-            className="absolute inset-0 w-full h-full object-contain p-4"
-          ></img>
+          {image ? (
+            <img
+              src={image}
+              alt={`${name} image`}
+              className="absolute inset-0 w-full h-full object-contain p-4"
+            ></img>
+          ) : (
+            <div className="absolute flex w-full h-full items-center justify-center">
+              <p className="text-lg font-mono text-gray-500">
+                No image available
+              </p>
+            </div>
+          )}
         </div>
         <div className="p-4">
           <h3 className="text-xl font-accent font-bold text-teal-700 capitalize mb-2">
             {name}
           </h3>
           <p className="font-mono text-md font-bold text-gray-600 mb-1">
-            {abilities.join(',')}
+            {abilities.join(',') || 'n/a'}
           </p>
           <p className="font-mono text-md text-gray-600 mb-1">
-            height: {height}
+            height: {height || 'n/a'}
           </p>
-          <p className="font-mono text-md text-gray-600">weight: {weight}</p>
+          <p className="font-mono text-md text-gray-600">
+            weight: {weight || 'n/a'}
+          </p>
         </div>
       </article>
     </Link>

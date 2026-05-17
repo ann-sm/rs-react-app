@@ -5,8 +5,8 @@ import { BASE_URL, fetchPokemonData } from '../../services/api';
 import Loader from '../../components/Loader/Loader';
 
 function Details() {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const detailsId = searchParams.get('details');
   const page = searchParams.get('page') || '1';
@@ -28,42 +28,49 @@ function Details() {
     navigate(`/?page=${page}`);
   }
 
-  if (!detailsId) {
-    return null;
-  }
-
   return (
     <div className="p-4 fixed mr-8 bg-white w-1/4 rounded-lg shadow-md mt-4 text-left">
-      <button
-        onClick={closeModal}
-        className="absolute top-2 right-4 text-2xl text-gray-500 hover:text-gray-700 hover:cursor-pointer"
-      >
-        ×
-      </button>
       {!pokemon ? (
         <Loader />
       ) : (
         <div>
-          <img
-            src={pokemon.image}
-            className="w-full h-full object-contain p-4"
-          ></img>
+          <div className="relative pb-[100%] bg-linear-to-br from-teal-50 to-blue-50 mb-4">
+            {pokemon.image ? (
+              <img
+                src={pokemon.image}
+                alt={`${pokemon.name} image`}
+                className=" absolute w-full h-full object-contain p-4"
+              ></img>
+            ) : (
+              <div className="absolute flex h-full w-full items-center justify-center">
+                <p className="text-lg font-mono text-gray-500">
+                  No image available
+                </p>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-6 text-2xl text-gray-500 hover:text-gray-700 hover:cursor-pointer"
+          >
+            ×
+          </button>
           <h2 className="text-xl font-accent font-bold text-teal-700 capitalize mb-2">
             {pokemon.name}
           </h2>
           <p className="font-mono text-md text-gray-600 mb-1">
-            types: {pokemon.types.join(', ')}
+            types: {pokemon.types.join(', ') || 'n/a'}
           </p>
           <p className="font-mono text-md text-gray-600 mb-1">
-            abilities: {pokemon.abilities.join(', ')}
+            abilities: {pokemon.abilities.join(', ') || 'n/a'}
           </p>
           <p className="font-mono text-md text-gray-600 mb-1">
-            height: {pokemon.height}
+            height: {pokemon.height || 'n/a'}
           </p>
           <p className="font-mono text-md text-gray-600 mb-2">
-            weight: {pokemon.weight}
+            weight: {pokemon.weight || 'n/a'}
           </p>
-          <audio src={pokemon.cry} controls></audio>
+          {pokemon.cry && <audio src={pokemon.cry} controls></audio>}
         </div>
       )}
     </div>

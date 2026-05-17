@@ -18,10 +18,18 @@ function About() {
               Technologies Used
             </h2>
             <ul className="list-disc list-inside space-y-1">
-              <li>React 18 with TypeScript</li>
-              <li>React Router v6</li>
+              <li>React with TypeScript</li>
+              <li>React Router</li>
               <li>Tailwind CSS</li>
-              <li>PokéAPI for data</li>
+              <li>
+                <Link
+                  to={'https://pokeapi.co/'}
+                  target="blank"
+                  className="text-yellow-600 hover:text-yellow-700 underline"
+                >
+                  PokéAPI
+                </Link>
+              </li>
               <li>Vite</li>
             </ul>
           </div>
@@ -39,14 +47,13 @@ function About() {
                 ann-sm
               </Link>{' '}
               as part of the{' '}
-              <a
-                href="https://rs.school/courses/reactjs"
+              <Link
+                to="https://rs.school/courses/reactjs"
                 target="_blank"
-                rel="noopener noreferrer"
                 className="text-yellow-600 hover:text-yellow-700 underline"
               >
                 RS School React Course
-              </a>
+              </Link>
             </p>
             <Link
               to="/"

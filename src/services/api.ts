@@ -2,6 +2,7 @@ import type { Pokemon, PokemonData, PokemonResponse } from '../types';
 
 export const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
 export const ITEMS_ON_PAGE = 20;
+export const POKEMONS_TOTAL = 1350;
 
 export async function fetchPokemonList(
   searchValue: string,
@@ -29,7 +30,7 @@ export async function fetchPokemonList(
     return { items, itemsTotal };
   }
   // Search by name
-  const response = await fetch(`${BASE_URL}?limit=1350&offset=0`);
+  const response = await fetch(`${BASE_URL}?limit=${POKEMONS_TOTAL}&offset=0`);
   if (!response.ok) {
     if (response.status >= 500) {
       throw new Error('Server error. Try again later.');
