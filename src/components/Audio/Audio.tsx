@@ -1,8 +1,14 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function Audio({ cry }: { cry: string }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      setIsPlaying(false);
+    }
+  }, [cry]);
 
   const togglePlayPause = () => {
     if (audioRef.current) {
