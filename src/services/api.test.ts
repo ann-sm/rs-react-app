@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { fetchPokemonList } from './api';
+import { fetchPokemonList, ITEMS_ON_PAGE, POKEMONS_TOTAL } from './api';
 import {
   mockPokemonResponse,
   mockPokemonDataResponse1,
@@ -7,9 +7,13 @@ import {
   mockPokemonDataResponse8,
 } from '../__tests__/mocks';
 
-vi.mock('./services/api', () => ({
-  fetchPokemonList: vi.fn(),
-}));
+vi.mock('./services/api', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...(actual as Record<string, unknown>),
+    fetchPokemonList: vi.fn(),
+  };
+});
 
 describe('API', () => {
   beforeEach(() => {
@@ -20,7 +24,7 @@ describe('API', () => {
   it('fetches pokemon list successfully without search value', async () => {
     const fetchMock = globalThis.fetch as ReturnType<typeof vi.fn>;
     fetchMock.mockImplementation((url: string) => {
-      if (url.includes('pokemon?limit=25&offset=0')) {
+      if (url.includes(`pokemon?limit=${ITEMS_ON_PAGE}&offset=0`)) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve(mockPokemonResponse),
@@ -48,14 +52,14 @@ describe('API', () => {
     });
 
     const result = await fetchPokemonList('', 1);
-    expect(result).toHaveLength(3);
-    expect(result[0].name).toBe('bulbasaur');
+    expect(result.items).toHaveLength(3);
+    expect(result.items[0].name).toBe('bulbasaur');
   });
 
   it('fetches and filters pokemon list successfully with search value', async () => {
     const fetchMock = globalThis.fetch as ReturnType<typeof vi.fn>;
     fetchMock.mockImplementationOnce((url: string) => {
-      if (url.includes('pokemon?limit=500&offset=0')) {
+      if (url.includes(`pokemon?limit=${POKEMONS_TOTAL}&offset=0`)) {
         return Promise.resolve({
           ok: true,
           json: () => Promise.resolve(mockPokemonResponse),
@@ -87,8 +91,8 @@ describe('API', () => {
     });
 
     const result = await fetchPokemonList('bulba', 1);
-    expect(result).toHaveLength(1);
-    expect(result[0].name).toBe('bulbasaur');
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].name).toBe('bulbasaur');
   });
 
   it('throws error for 4xx client errors when fetching without search value', async () => {
