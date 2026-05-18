@@ -4,6 +4,15 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import NotFound from './NotFound';
 
+const mockBack = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockBack,
+  };
+});
+
 describe('NotFound', () => {
   it('renders 404 heading', () => {
     render(
@@ -39,12 +48,8 @@ describe('NotFound', () => {
     expect(homeLink).toHaveAttribute('href', '/');
   });
 
-  it('has a go back button that calls window.history.back', async () => {
-    const mockBack = vi.fn();
-    Object.defineProperty(window, 'history', {
-      value: { back: mockBack },
-      writable: true,
-    });
+  it('has a go back button that navigates to the previous page', async () => {
+    const user = userEvent.setup();
 
     render(
       <MemoryRouter>
@@ -53,8 +58,9 @@ describe('NotFound', () => {
     );
 
     const backButton = screen.getByText('Go Back');
-    await userEvent.click(backButton);
+    await user.click(backButton);
 
-    expect(mockBack).toHaveBeenCalled();
+    expect(mockBack).toHaveBeenCalledTimes(1);
+    expect(mockBack).toHaveBeenCalledWith(-1);
   });
 });

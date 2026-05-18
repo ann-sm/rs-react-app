@@ -1,6 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function NotFound() {
+  const navigate = useNavigate();
+
   return (
     <main className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="text-center">
@@ -23,7 +25,7 @@ function NotFound() {
             Go to PokéSearch
           </Link>
           <button
-            onClick={() => window.history.back()}
+            onClick={() => navigate(-1)}
             className="inline-block bg-gray-500 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors shadow-md"
           >
             Go Back

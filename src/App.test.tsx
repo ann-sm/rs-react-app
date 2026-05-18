@@ -94,7 +94,7 @@ describe('App', () => {
     resolvePromise!(mockData);
 
     await waitFor(() => {
-      expect(document.querySelector('.animate-spin')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('.animate-spin')).not.toBeInTheDocument();
       expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
       expect(screen.getByText('Charmander')).toBeInTheDocument();
     });
