@@ -33,8 +33,7 @@ describe('CardList', () => {
         <CardList pokemons={mockCardList.pokemons} isLoading={true} />
       </MemoryRouter>
     );
-    const spinner = document.querySelector('.animate-spin');
-    expect(spinner).toBeInTheDocument();
+    expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
   });
 
   it('correctly displays item names and descriptions', () => {

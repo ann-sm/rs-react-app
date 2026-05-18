@@ -33,7 +33,7 @@ describe('Details', () => {
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
   });
 
-  it('renders loader when no pokemon data', () => {
+  it('renders loader when no pokemon data', async () => {
     mockSearchParams = new URLSearchParams({ details: '1', page: '1' });
     vi.mocked(useSearchParams).mockReturnValue([mockSearchParams, vi.fn()]);
 
@@ -43,7 +43,9 @@ describe('Details', () => {
       </MemoryRouter>
     );
 
-    expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
+    });
   });
 
   it('fetches and displays pokemon details', async () => {

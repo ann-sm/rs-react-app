@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { Pokemon } from '../../types';
 import { BASE_URL, fetchPokemonData } from '../../services/api';
 import Loader from '../../components/Loader/Loader';
+import Audio from '../../components/Audio/Audio';
 
 function Details() {
   const navigate = useNavigate();
@@ -51,9 +52,12 @@ function Details() {
           >
             ×
           </button>
-          <h2 className="text-xl font-accent font-bold text-teal-700 capitalize mb-2">
-            {pokemon.name}
-          </h2>
+          <div className="flex gap-4 items-center justify-between">
+            <h2 className="text-xl font-accent font-bold text-teal-700 capitalize mb-2">
+              {pokemon.name}
+            </h2>
+            {pokemon.cry && <Audio cry={pokemon.cry} />}
+          </div>
           <p className="font-mono text-md text-gray-600 mb-1">
             types: {pokemon.types.join(', ') || 'n/a'}
           </p>
@@ -66,7 +70,6 @@ function Details() {
           <p className="font-mono text-md text-gray-600 mb-2">
             weight: {pokemon.weight || 'n/a'}
           </p>
-          {pokemon.cry && <audio src={pokemon.cry} controls></audio>}
         </div>
       )}
     </div>

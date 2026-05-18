@@ -87,7 +87,7 @@ describe('App', () => {
       </MemoryRouter>
     );
 
-    expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+    expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
     expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
     expect(screen.queryByText('Charmander')).not.toBeInTheDocument();
 
