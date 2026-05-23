@@ -7,6 +7,8 @@ import Search from './components/Search/Search';
 import useLocalStorage from './hooks/useLocalStorage';
 import Pagination from './components/Pagination/Pagination';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
+import Flyout from './components/Flyout/Flyout';
+import { useAppSelector } from './store/hooks';
 
 function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -20,6 +22,10 @@ function App() {
   const detailsId = searchParams.get('details');
 
   const navigate = useNavigate();
+
+  const selectedPokemons = useAppSelector(
+    (state) => state.selectedPokemons.selectedPokemons
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -85,6 +91,7 @@ function App() {
       >
         Error Button
       </button>
+      {selectedPokemons.length && <Flyout />}
     </main>
   );
 }

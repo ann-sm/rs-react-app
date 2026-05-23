@@ -25,12 +25,12 @@ export const selectedPokemonsSlice = createSlice({
         state.selectedPokemons.push(action.payload);
       }
     }),
-    removeAllPokemons: create.reducer((state) => {
+    unselectAllPokemons: create.reducer((state) => {
       state.selectedPokemons = [];
     }),
   }),
 });
 
-export const { togglePokemon, removeAllPokemons } =
+export const { togglePokemon, unselectAllPokemons } =
   selectedPokemonsSlice.actions;
 export default selectedPokemonsSlice.reducer;

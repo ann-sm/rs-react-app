@@ -37,7 +37,7 @@ function About() {
             <h2 className="text-xl font-bold text-teal-600 mt-6 mb-3">
               Course
             </h2>
-            <p>
+            <p className="mb-8">
               This project was created by{' '}
               <Link
                 to={'https://github.com/ann-sm'}
@@ -57,7 +57,7 @@ function About() {
             </p>
             <Link
               to="/"
-              className="inline-block bg-gray-800 text-white font-mono px-4 py-2 mt-6 rounded-lg hover:bg-gray-900 transition-colors"
+              className="inline-block bg-teal-600 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md"
             >
               ← Back to Search
             </Link>
