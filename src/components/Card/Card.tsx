@@ -1,11 +1,18 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import type { CardProps } from '../../types';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { togglePokemon } from '../../store/selectedPokemonsSlice';
 
 function Card({ data }: CardProps) {
   const { id, name, height, weight, image, abilities } = data;
 
   const [searchParams] = useSearchParams();
   const page = Number(searchParams.get('page') || 1);
+
+  const dispatch = useAppDispatch();
+  const selectedPokemons = useAppSelector(
+    (state) => state.selectedPokemons.selectedPokemons
+  );
 
   return (
     <Link to={`/?page=${page}&details=${id}`} className="block h-full min-w-0">
@@ -39,6 +46,14 @@ function Card({ data }: CardProps) {
             weight: {weight || 'n/a'}
           </p>
         </div>
+        <input
+          type="checkbox"
+          id={`pokemon-${id}`}
+          checked={selectedPokemons.some((pokemon) => pokemon.id === id)}
+          onChange={() => dispatch(togglePokemon(data))}
+          onClick={(e) => e.stopPropagation()}
+        />
+        <p>{selectedPokemons.map((pokemon) => pokemon.name).join(',')}</p>
       </article>
     </Link>
   );
