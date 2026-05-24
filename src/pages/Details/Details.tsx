@@ -12,11 +12,14 @@ function Details() {
   const detailsId = searchParams.get('details');
   const page = searchParams.get('page') || '1';
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchDetails() {
+      setIsLoading(true);
       const data = await fetchPokemonData(`${BASE_URL}/${detailsId}`);
       setPokemon(data);
+      setIsLoading(false);
     }
     fetchDetails();
   }, [detailsId]);
@@ -27,7 +30,7 @@ function Details() {
 
   return (
     <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
-      {!pokemon ? (
+      {!pokemon || isLoading ? (
         <Loader />
       ) : (
         <div>
