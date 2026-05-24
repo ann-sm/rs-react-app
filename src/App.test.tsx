@@ -5,6 +5,7 @@ import App from './App';
 import { mockData } from './__tests__/mocks';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { TestWrapper } from './__tests__/testStore';
 
 vi.mock('./services/api', async (importOriginal) => {
   const actual = await importOriginal();
@@ -26,9 +27,11 @@ describe('App', () => {
     vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
 
     render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <TestWrapper>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </TestWrapper>
     );
 
     expect(fetchPokemonList).toHaveBeenCalledWith('', 1);
@@ -42,9 +45,11 @@ describe('App', () => {
     localStorage.setItem('ann-sm-pokemons', 'Bulbasaur');
 
     render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <TestWrapper>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </TestWrapper>
     );
 
     await waitFor(() => {
@@ -57,9 +62,11 @@ describe('App', () => {
 
   it('saves search term to localStorage and updates state on search', async () => {
     render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <TestWrapper>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </TestWrapper>
     );
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
@@ -82,9 +89,11 @@ describe('App', () => {
     vi.mocked(fetchPokemonList).mockReturnValue(promise);
 
     render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <TestWrapper>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </TestWrapper>
     );
 
     expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
@@ -102,9 +111,11 @@ describe('App', () => {
 
   it('calls API with correct parameters after search', async () => {
     render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <TestWrapper>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </TestWrapper>
     );
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });

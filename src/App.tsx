@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import './App.css';
 import CardList from './components/CardList/CardList';
 import type { Pokemon } from './types';
 import { fetchPokemonList, ITEMS_ON_PAGE } from './services/api';
