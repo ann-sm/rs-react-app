@@ -1,11 +1,24 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Card from './Card';
 import { CardPropsMissing, mockCard } from '../../__tests__/mocks';
 import { MemoryRouter } from 'react-router-dom';
 import { TestWrapper } from '../../__tests__/testStore';
+import { store } from '../../store/store';
+import {
+  togglePokemon,
+  unselectAllPokemons,
+} from '../../store/selectedPokemonsSlice';
+import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+
+const user = userEvent.setup();
 
 describe('Card', () => {
+  beforeEach(() => {
+    store.dispatch(unselectAllPokemons());
+  });
+
   it('renders item name correctly', () => {
     render(
       <TestWrapper>
@@ -59,5 +72,69 @@ describe('Card', () => {
     expect(images).toHaveLength(0);
     expect(screen.getByText('No image available')).toBeInTheDocument();
     expect(screen.getByText('n/a')).toBeInTheDocument();
+  });
+
+  it('renders checkbox input', () => {
+    render(
+      <TestWrapper>
+        <MemoryRouter>
+          <Card data={mockCard.data} />
+        </MemoryRouter>
+      </TestWrapper>
+    );
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).toBeInTheDocument();
+    expect(checkbox).toHaveAttribute('type', 'checkbox');
+  });
+
+  it('checkbox should be checked when pokemon is selected in Redux store', () => {
+    store.dispatch(togglePokemon(mockCard.data));
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Card data={mockCard.data} />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    const checkbox = screen.getByRole('checkbox') as HTMLInputElement;
+    expect(checkbox.checked).toBe(true);
+  });
+
+  it('should dispatch togglePokemon action when checkbox is clicked', async () => {
+    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Card data={mockCard.data} />
+        </MemoryRouter>
+      </Provider>
+    );
+    const checkbox = screen.getByRole('checkbox');
+    await user.click(checkbox);
+
+    expect(dispatchSpy).toHaveBeenCalledWith({
+      type: 'selectedPokemons/togglePokemon',
+      payload: mockCard.data,
+    });
+    dispatchSpy.mockRestore();
+  });
+
+  it('should stop propagation when clicking checkbox', () => {
+    const onClickMock = vi.fn();
+
+    render(
+      <TestWrapper>
+        <MemoryRouter>
+          <div onClick={onClickMock}>
+            <Card data={mockCard.data} />
+          </div>
+        </MemoryRouter>
+      </TestWrapper>
+    );
+    const checkbox = screen.getByRole('checkbox');
+    user.click(checkbox);
+    expect(onClickMock).not.toHaveBeenCalled();
   });
 });

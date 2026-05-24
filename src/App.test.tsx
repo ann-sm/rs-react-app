@@ -4,7 +4,7 @@ import { fetchPokemonList } from './services/api';
 import App from './App';
 import { mockData } from './__tests__/mocks';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { TestWrapper } from './__tests__/testStore';
 
 vi.mock('./services/api', async (importOriginal) => {
@@ -13,6 +13,24 @@ vi.mock('./services/api', async (importOriginal) => {
     ...(actual as Record<string, unknown>),
     fetchPokemonList: vi.fn(),
   };
+});
+
+vi.mock('react-router-dom', async () => {
+  const actual =
+    await vi.importActual<typeof import('react-router-dom')>(
+      'react-router-dom'
+    );
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+  };
+});
+
+const mockNavigate = vi.fn();
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 });
 
 describe('App', () => {
@@ -124,6 +142,59 @@ describe('App', () => {
     await user.click(button);
     await waitFor(() => {
       expect(fetchPokemonList).toHaveBeenCalledWith('bulbasaur', 1);
+    });
+  });
+
+  it('should navigate to next page', async () => {
+    vi.mocked(fetchPokemonList).mockResolvedValue({
+      ...mockData,
+      itemsTotal: 21,
+    });
+
+    render(
+      <TestWrapper>
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('.animate-spin')).not.toBeInTheDocument();
+    });
+    const nextButton = screen.getByRole('button', { name: '>' });
+    await user.click(nextButton);
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/?page=2');
+    });
+  });
+
+  it('should navigate to previous page', async () => {
+    vi.mocked(fetchPokemonList).mockResolvedValue({
+      ...mockData,
+      itemsTotal: 21,
+    });
+
+    render(
+      <TestWrapper>
+        <MemoryRouter initialEntries={['/?page=2']}>
+          <App />
+        </MemoryRouter>
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('animate-spin')).not.toBeInTheDocument();
+    });
+
+    expect(fetchPokemonList).toHaveBeenCalledWith('', 2);
+
+    const previousButton = screen.getByRole('button', { name: '<' });
+    await user.click(previousButton);
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/?page=1');
     });
   });
 });
