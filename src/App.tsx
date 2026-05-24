@@ -57,7 +57,7 @@ function App() {
   }
 
   return (
-    <main className="flex flex-col flex-1 bg-gray-100 text-center">
+    <main className="flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 text-center">
       <Search initialValue={savedValue} onSearch={handleSearch} />
       <section className="flex flex-1">
         <section
@@ -91,7 +91,7 @@ function App() {
       >
         Error Button
       </button>
-      {selectedPokemons.length && <Flyout />}
+      {selectedPokemons.length > 0 && <Flyout />}
     </main>
   );
 }

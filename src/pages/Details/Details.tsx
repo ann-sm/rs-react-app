@@ -26,12 +26,12 @@ function Details() {
   }
 
   return (
-    <div className="p-4 fixed mr-8 bg-white w-1/4 rounded-lg shadow-md mt-4 text-left">
+    <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
       {!pokemon ? (
         <Loader />
       ) : (
         <div>
-          <div className="relative pb-[100%] bg-linear-to-br from-teal-50 to-blue-50 mb-4">
+          <div className="relative pb-[100%] bg-linear-to-br from-teal-50 to-blue-50 dark:from-slate-500 dark:to-mist-500 mb-4">
             {pokemon.image ? (
               <img
                 src={pokemon.image}
@@ -48,26 +48,26 @@ function Details() {
           </div>
           <button
             onClick={closeModal}
-            className="absolute top-4 right-6 text-2xl text-gray-500 hover:text-gray-700 hover:cursor-pointer"
+            className="absolute top-4 right-6 text-2xl text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:cursor-pointer"
           >
             ×
           </button>
           <div className="flex gap-4 items-center justify-between">
-            <h2 className="text-xl font-accent font-bold text-teal-700 capitalize mb-2">
+            <h2 className="text-xl font-accent font-bold text-teal-700 dark:text-green-200 capitalize mb-2">
               {pokemon.name}
             </h2>
             {pokemon.cry && <Audio cry={pokemon.cry} />}
           </div>
-          <p className="font-mono text-md text-gray-600 mb-1">
+          <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-1">
             types: {pokemon.types.join(', ') || 'n/a'}
           </p>
-          <p className="font-mono text-md text-gray-600 mb-1">
+          <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-1">
             abilities: {pokemon.abilities.join(', ') || 'n/a'}
           </p>
-          <p className="font-mono text-md text-gray-600 mb-1">
+          <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-1">
             height: {pokemon.height || 'n/a'}
           </p>
-          <p className="font-mono text-md text-gray-600 mb-2">
+          <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-2">
             weight: {pokemon.weight || 'n/a'}
           </p>
         </div>

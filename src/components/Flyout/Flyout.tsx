@@ -41,7 +41,7 @@ function Flyout() {
   const csvFile = handleDownload();
 
   return (
-    <div className="fixed right-4 bottom-4 p-4 rounded-lg bg-teal-50 shadow-md">
+    <div className="fixed right-4 bottom-4 p-4 rounded-lg bg-teal-50 dark:bg-mist-400 shadow-md">
       <h3 className="font-mono text-lg text-md mb-4">{`${selectedPokemons.length} pokemon(s) selected`}</h3>
       <div className="space-x-4">
         <button
