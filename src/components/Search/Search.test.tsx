@@ -9,12 +9,17 @@ import { store } from '../../store/store';
 
 const renderSearch = (
   initialValue: string,
+  savedValue: string,
   onSearch: (value: string) => void
 ) => {
   render(
     <Provider store={store}>
       <MemoryRouter>
-        <Search initialValue={initialValue} onSearch={onSearch} />
+        <Search
+          initialValue={initialValue}
+          savedValue={savedValue}
+          onSearch={onSearch}
+        />
       </MemoryRouter>
     </Provider>
   );
@@ -38,7 +43,7 @@ describe('Search', () => {
   });
 
   it('renders search input and search button', () => {
-    renderSearch('', () => {});
+    renderSearch('', '', () => {});
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -56,14 +61,14 @@ describe('Search', () => {
   });
 
   it('shows empty input when no saved term exists', () => {
-    renderSearch('', () => {});
+    renderSearch('', '', () => {});
     const input = screen.getByRole('searchbox');
 
     expect(input).toHaveValue('');
   });
 
   it('updates input value when user types', async () => {
-    renderSearch('', () => {});
+    renderSearch('', '', () => {});
     const input = screen.getByRole('searchbox');
 
     await user.type(input, 'bulbasaur');
@@ -73,7 +78,7 @@ describe('Search', () => {
 
   it('triggers onSearch with entered value when search button is clicked', async () => {
     const onSearch = vi.fn();
-    renderSearch('', onSearch);
+    renderSearch('', '', onSearch);
 
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
@@ -88,7 +93,7 @@ describe('Search', () => {
     const savedValue = 'test previous search';
     localStorage.setItem('ann-sm-pokemons', savedValue);
     const onSearch = vi.fn();
-    renderSearch('', onSearch);
+    renderSearch('', savedValue, onSearch);
 
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
@@ -101,7 +106,7 @@ describe('Search', () => {
 
   it('trims whitespace from search input before saving', async () => {
     const onSearch = vi.fn();
-    renderSearch('', onSearch);
+    renderSearch('', '', onSearch);
 
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });

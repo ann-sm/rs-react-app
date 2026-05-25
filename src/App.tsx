@@ -57,7 +57,11 @@ function App() {
 
   return (
     <main className="flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 text-center">
-      <Search initialValue={savedValue} onSearch={handleSearch} />
+      <Search
+        initialValue={savedValue}
+        savedValue={savedValue}
+        onSearch={handleSearch}
+      />
       <section className="flex flex-1">
         <section
           className={

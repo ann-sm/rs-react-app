@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import type { SearchProps } from '../../types';
-import useLocalStorage from '../../hooks/useLocalStorage';
 
-function Search({ initialValue, onSearch }: SearchProps) {
+function Search({ initialValue, savedValue, onSearch }: SearchProps) {
   const [searchValue, setSearchValue] = useState(initialValue);
-  const [savedValue] = useLocalStorage();
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(event.target.value);
