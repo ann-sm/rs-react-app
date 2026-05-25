@@ -16,7 +16,7 @@ function App() {
   const [hasError, setHasError] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') || '1');
   const detailsId = searchParams.get('details');
 
@@ -25,6 +25,12 @@ function App() {
   const selectedPokemons = useAppSelector(
     (state) => state.selectedPokemons.selectedPokemons
   );
+
+  useEffect(() => {
+    if (!searchParams.has('page')) {
+      setSearchParams({ page: '1' }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     async function fetchData() {
