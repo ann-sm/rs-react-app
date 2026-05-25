@@ -5,7 +5,8 @@ import App from './App';
 import { mockData } from './__tests__/mocks';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
-import { TestWrapper } from './__tests__/testStore';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 
 vi.mock('./services/api', async (importOriginal) => {
   const actual = await importOriginal();
@@ -28,15 +29,21 @@ vi.mock('react-router-dom', async () => {
 
 const mockNavigate = vi.fn();
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  vi.mocked(useNavigate).mockReturnValue(mockNavigate);
-});
+const renderApp = () => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    </Provider>
+  );
+};
 
 describe('App', () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
+    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
     localStorage.clear();
     vi.clearAllMocks();
   });
@@ -44,13 +51,7 @@ describe('App', () => {
   it('makes initial API call on component mount', async () => {
     vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
 
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderApp();
 
     expect(fetchPokemonList).toHaveBeenCalledWith('', 1);
     await waitFor(() => {
@@ -62,13 +63,7 @@ describe('App', () => {
   it('handles search term from localStorage on initial load', async () => {
     localStorage.setItem('ann-sm-pokemons', 'Bulbasaur');
 
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderApp();
 
     await waitFor(() => {
       vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
@@ -79,13 +74,7 @@ describe('App', () => {
   });
 
   it('saves search term to localStorage and updates state on search', async () => {
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderApp();
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -106,13 +95,7 @@ describe('App', () => {
 
     vi.mocked(fetchPokemonList).mockReturnValue(promise);
 
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderApp();
 
     expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
     expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
@@ -128,13 +111,7 @@ describe('App', () => {
   });
 
   it('calls API with correct parameters after search', async () => {
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderApp();
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -151,13 +128,7 @@ describe('App', () => {
       itemsTotal: 21,
     });
 
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderApp();
 
     await waitFor(() => {
       expect(screen.queryByLabelText('.animate-spin')).not.toBeInTheDocument();
@@ -177,11 +148,11 @@ describe('App', () => {
     });
 
     render(
-      <TestWrapper>
+      <Provider store={store}>
         <MemoryRouter initialEntries={['/?page=2']}>
           <App />
         </MemoryRouter>
-      </TestWrapper>
+      </Provider>
     );
 
     await waitFor(() => {

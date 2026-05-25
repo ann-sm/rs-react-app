@@ -3,57 +3,43 @@ import { render, screen } from '@testing-library/react';
 import CardList from './CardList';
 import { mockCardList, mockCardListPropsMissing } from '../../__tests__/mocks';
 import { MemoryRouter } from 'react-router-dom';
-import { TestWrapper } from '../../__tests__/testStore';
+import type { Pokemon } from '../../types';
+import { Provider } from 'react-redux';
+import { store } from '../../store/store';
+
+const renderCardList = (pokemons: Pokemon[], isLoading: boolean) => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <CardList pokemons={pokemons} isLoading={isLoading} />
+      </MemoryRouter>
+    </Provider>
+  );
+};
 
 describe('CardList', () => {
   it('renders correct number of items', () => {
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <CardList
-            pokemons={mockCardList.pokemons}
-            isLoading={mockCardList.isLoading}
-          />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderCardList(mockCardList.pokemons, mockCardList.isLoading);
     const cards = screen.getAllByRole('article');
+
     expect(cards).toHaveLength(2);
   });
 
   it('displays no results message when array is empty', () => {
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <CardList pokemons={[]} isLoading={mockCardList.isLoading} />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderCardList([], mockCardList.isLoading);
+
     expect(screen.getByText(/No pokemons found/i)).toBeInTheDocument();
   });
 
   it('shows loading state while fetching data', () => {
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <CardList pokemons={mockCardList.pokemons} isLoading={true} />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderCardList(mockCardList.pokemons, true);
+
     expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
   });
 
   it('correctly displays item names and descriptions', () => {
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <CardList
-            pokemons={mockCardList.pokemons}
-            isLoading={mockCardList.isLoading}
-          />
-        </MemoryRouter>
-      </TestWrapper>
-    );
+    renderCardList(mockCardList.pokemons, mockCardList.isLoading);
+
     mockCardList.pokemons.forEach((item) => {
       expect(screen.getByText(item.name)).toBeInTheDocument();
       expect(screen.getByText(`height: ${item.height}`)).toBeInTheDocument();
@@ -63,16 +49,11 @@ describe('CardList', () => {
   });
 
   it('handles missing or undefined data gracefully', () => {
-    render(
-      <TestWrapper>
-        <MemoryRouter>
-          <CardList
-            pokemons={mockCardListPropsMissing.pokemons}
-            isLoading={mockCardListPropsMissing.isLoading}
-          />
-        </MemoryRouter>
-      </TestWrapper>
+    renderCardList(
+      mockCardListPropsMissing.pokemons,
+      mockCardListPropsMissing.isLoading
     );
+
     const imageElements = screen.queryAllByRole('img');
     expect(imageElements).toHaveLength(0);
 
