@@ -4,9 +4,35 @@ import ErrorBoundary from './ErrorBoundary';
 import userEvent from '@testing-library/user-event';
 import App from '../../App';
 import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from '../../store/store';
 
 const ThrowError = () => {
   throw new Error('Test Error');
+};
+
+const renderError = () => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <ThrowError />
+        </ErrorBoundary>
+      </MemoryRouter>
+    </Provider>
+  );
+};
+
+const renderApp = () => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </MemoryRouter>
+    </Provider>
+  );
 };
 
 describe('ErrorBoundary', () => {
@@ -23,25 +49,14 @@ describe('ErrorBoundary', () => {
   });
 
   it('catches and handles JavaScript errors in child components', () => {
-    render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <ThrowError />
-        </ErrorBoundary>
-      </MemoryRouter>
-    );
+    renderError();
+
     expect(screen.getByText('Something went very wrong')).toBeInTheDocument();
     expect(screen.getByText('Test Error')).toBeInTheDocument();
   });
 
   it('displays fallback UI when error occurs', () => {
-    render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <ThrowError />
-        </ErrorBoundary>
-      </MemoryRouter>
-    );
+    renderError();
 
     expect(
       screen.getByRole('heading', { name: 'Something went very wrong' })
@@ -50,25 +65,13 @@ describe('ErrorBoundary', () => {
   });
 
   it('logs error to console', () => {
-    render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <ThrowError />
-        </ErrorBoundary>
-      </MemoryRouter>
-    );
+    renderError();
 
     expect(consoleErrorSpy).toHaveBeenCalled();
   });
 
   it('throws error when test button is clicked', async () => {
-    render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-      </MemoryRouter>
-    );
+    renderApp();
 
     const errorButton = screen.getByRole('button', { name: 'Error Button' });
     await user.click(errorButton);
@@ -90,11 +93,13 @@ describe('ErrorBoundary', () => {
     };
 
     const { rerender } = render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <TestComponent />
-        </ErrorBoundary>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <ErrorBoundary>
+            <TestComponent />
+          </ErrorBoundary>
+        </MemoryRouter>
+      </Provider>
     );
 
     expect(screen.queryByText('Something went very wrong')).toBeInTheDocument();
@@ -105,11 +110,13 @@ describe('ErrorBoundary', () => {
     await user.click(fixButton);
 
     rerender(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <TestComponent />
-        </ErrorBoundary>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <ErrorBoundary>
+            <TestComponent />
+          </ErrorBoundary>
+        </MemoryRouter>
+      </Provider>
     );
 
     await waitFor(() => {

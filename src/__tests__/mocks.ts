@@ -73,6 +73,20 @@ export const mockCard: CardProps = {
   },
 };
 
+export const mockCard2: CardProps = {
+  data: {
+    id: 4,
+    name: 'Charmander',
+    height: 6,
+    weight: 48,
+    image:
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png',
+    abilities: ['blaze', 'olar-power'],
+    types: ['fire'],
+    cry: 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/4.ogg',
+  },
+};
+
 export const CardPropsMissing: CardProps = {
   data: {
     id: 1,

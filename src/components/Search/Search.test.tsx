@@ -4,6 +4,36 @@ import userEvent from '@testing-library/user-event';
 import Search from './Search';
 import App from '../../App';
 import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from '../../store/store';
+
+const renderSearch = (
+  initialValue: string,
+  savedValue: string,
+  onSearch: (value: string) => void
+) => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <Search
+          initialValue={initialValue}
+          savedValue={savedValue}
+          onSearch={onSearch}
+        />
+      </MemoryRouter>
+    </Provider>
+  );
+};
+
+const renderApp = () => {
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    </Provider>
+  );
+};
 
 describe('Search', () => {
   const user = userEvent.setup();
@@ -13,11 +43,7 @@ describe('Search', () => {
   });
 
   it('renders search input and search button', () => {
-    render(
-      <MemoryRouter>
-        <Search initialValue="" onSearch={() => {}} />
-      </MemoryRouter>
-    );
+    renderSearch('', '', () => {});
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -28,33 +54,21 @@ describe('Search', () => {
   it('displays previously saved search term from localStorage', () => {
     const searchValue = 'test previous search display';
     localStorage.setItem('ann-sm-pokemons', searchValue);
-    render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
-    );
+    renderApp();
     const input = screen.getByRole('searchbox');
 
     expect(input).toHaveValue(searchValue);
   });
 
   it('shows empty input when no saved term exists', () => {
-    render(
-      <MemoryRouter>
-        <Search initialValue="" onSearch={() => {}} />
-      </MemoryRouter>
-    );
+    renderSearch('', '', () => {});
     const input = screen.getByRole('searchbox');
 
     expect(input).toHaveValue('');
   });
 
   it('updates input value when user types', async () => {
-    render(
-      <MemoryRouter>
-        <Search initialValue="" onSearch={() => {}} />
-      </MemoryRouter>
-    );
+    renderSearch('', '', () => {});
     const input = screen.getByRole('searchbox');
 
     await user.type(input, 'bulbasaur');
@@ -64,11 +78,8 @@ describe('Search', () => {
 
   it('triggers onSearch with entered value when search button is clicked', async () => {
     const onSearch = vi.fn();
-    render(
-      <MemoryRouter>
-        <Search initialValue="" onSearch={onSearch} />
-      </MemoryRouter>
-    );
+    renderSearch('', '', onSearch);
+
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -82,11 +93,8 @@ describe('Search', () => {
     const savedValue = 'test previous search';
     localStorage.setItem('ann-sm-pokemons', savedValue);
     const onSearch = vi.fn();
-    render(
-      <MemoryRouter>
-        <Search initialValue="" onSearch={onSearch} />
-      </MemoryRouter>
-    );
+    renderSearch('', savedValue, onSearch);
+
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
@@ -98,11 +106,8 @@ describe('Search', () => {
 
   it('trims whitespace from search input before saving', async () => {
     const onSearch = vi.fn();
-    render(
-      <MemoryRouter>
-        <Search initialValue="" onSearch={onSearch} />
-      </MemoryRouter>
-    );
+    renderSearch('', '', onSearch);
+
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 

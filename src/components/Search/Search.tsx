@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import type { SearchProps } from '../../types';
-import useLocalStorage from '../../hooks/useLocalStorage';
 
-function Search({ initialValue, onSearch }: SearchProps) {
+function Search({ initialValue, savedValue, onSearch }: SearchProps) {
   const [searchValue, setSearchValue] = useState(initialValue);
-  const [savedValue] = useLocalStorage();
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchValue(event.target.value);
@@ -35,7 +33,7 @@ function Search({ initialValue, onSearch }: SearchProps) {
         value={searchValue}
         onChange={handleInputChange}
         placeholder="Enter a pokemon name..."
-        className="flex-1 px-4 py-3 rounded-bl-lg font-mono rounded-tl-lg bg-white border-2 border-transparent focus:border-yellow-400 focus:outline-none text-gray-800 placeholder-gray-400"
+        className="flex-1 px-4 py-3 rounded-bl-lg font-mono rounded-tl-lg bg-white dark:bg-teal-950 border-2 border-transparent dark:border-teal-900 focus:border-yellow-400 focus:outline-none text-gray-800 dark:text-gray-300 placeholder-gray-400"
       ></input>
       <button
         type="submit"

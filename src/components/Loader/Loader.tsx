@@ -1,6 +1,6 @@
 function Loader() {
   return (
-    <div className="flex items-center justify-center min-h-[60vh] w-full">
+    <div className="flex items-center justify-center min-h-[58vh] w-full">
       <div
         className="relative h-18 w-18 animate-spin rounded-full border-4 border-black bg-linear-to-b from-red-500 from-50% to-white to-50%"
         aria-label="animate-spin"

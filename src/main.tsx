@@ -7,6 +7,9 @@ import About from './pages/About/About.tsx';
 import NotFound from './pages/NotFound/NotFound.tsx';
 import Details from './pages/Details/Details.tsx';
 import Layout from './components/Layout/Layout.tsx';
+import { Provider } from 'react-redux';
+import { store } from './store/store.ts';
+import { ThemeProvider } from './contexts/theme/ThemeProvider.tsx';
 
 const router = createBrowserRouter([
   {
@@ -34,6 +37,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </Provider>
   </StrictMode>
 );

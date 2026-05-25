@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import './App.css';
 import CardList from './components/CardList/CardList';
 import type { Pokemon } from './types';
 import { fetchPokemonList, ITEMS_ON_PAGE } from './services/api';
@@ -7,6 +6,8 @@ import Search from './components/Search/Search';
 import useLocalStorage from './hooks/useLocalStorage';
 import Pagination from './components/Pagination/Pagination';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
+import Flyout from './components/Flyout/Flyout';
+import { useAppSelector } from './store/hooks';
 
 function App() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -15,11 +16,21 @@ function App() {
   const [hasError, setHasError] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') || '1');
   const detailsId = searchParams.get('details');
 
   const navigate = useNavigate();
+
+  const selectedPokemons = useAppSelector(
+    (state) => state.selectedPokemons.selectedPokemons
+  );
+
+  useEffect(() => {
+    if (!searchParams.has('page')) {
+      setSearchParams({ page: '1' }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     async function fetchData() {
@@ -51,8 +62,12 @@ function App() {
   }
 
   return (
-    <main className="flex flex-col flex-1 bg-gray-100 text-center">
-      <Search initialValue={savedValue} onSearch={handleSearch} />
+    <main className="flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 text-center">
+      <Search
+        initialValue={savedValue}
+        savedValue={savedValue}
+        onSearch={handleSearch}
+      />
       <section className="flex flex-1">
         <section
           className={
@@ -85,6 +100,7 @@ function App() {
       >
         Error Button
       </button>
+      {selectedPokemons.length > 0 && <Flyout />}
     </main>
   );
 }
