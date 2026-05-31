@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import type { Pokemon } from '../../types';
-import { BASE_URL, fetchPokemonData } from '../../services/api';
 import Loader from '../../components/Loader/Loader';
 import Audio from '../../components/Audio/Audio';
+import { useGetPokemonQuery } from '../../store/pokemonApi';
 
 function Details() {
   const navigate = useNavigate();
@@ -11,18 +9,11 @@ function Details() {
 
   const detailsId = searchParams.get('details');
   const page = searchParams.get('page') || '1';
-  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchDetails() {
-      setIsLoading(true);
-      const data = await fetchPokemonData(`${BASE_URL}/${detailsId}`);
-      setPokemon(data);
-      setIsLoading(false);
-    }
-    fetchDetails();
-  }, [detailsId]);
+  const { data, isLoading } = useGetPokemonQuery(detailsId ?? '', {
+    skip: !detailsId,
+  });
+  const pokemon = data;
 
   function closeModal() {
     navigate(`/?page=${page}`);

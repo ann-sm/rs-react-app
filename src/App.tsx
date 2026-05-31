@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react';
 import CardList from './components/CardList/CardList';
-import type { Pokemon } from './types';
-import { fetchPokemonList, ITEMS_ON_PAGE } from './services/api';
 import Search from './components/Search/Search';
 import useLocalStorage from './hooks/useLocalStorage';
 import Pagination from './components/Pagination/Pagination';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import Flyout from './components/Flyout/Flyout';
 import { useAppSelector } from './store/hooks';
+import { ITEMS_ON_PAGE, useGetPokemonListQuery } from './store/pokemonApi';
 
 function App() {
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [savedValue, setSavedValue] = useLocalStorage();
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [totalPages, setTotalPages] = useState(1);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') || '1');
   const detailsId = searchParams.get('details');
+
+  const { data, isLoading, error } = useGetPokemonListQuery({
+    searchValue: savedValue,
+    page,
+  });
+
+  const pokemons = data?.items ?? [];
+  const totalPages = Math.ceil((data?.itemsTotal ?? 0) / ITEMS_ON_PAGE);
+  const [hasError, setHasError] = useState(false);
 
   const navigate = useNavigate();
 
@@ -32,20 +35,6 @@ function App() {
     }
   }, [searchParams, setSearchParams]);
 
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const data = await fetchPokemonList(savedValue, page);
-        setPokemons(data.items);
-        setTotalPages(Math.ceil(data.itemsTotal / ITEMS_ON_PAGE));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchData();
-  }, [savedValue, page]);
-
   function handleSearch(searchValue: string) {
     if (searchValue !== savedValue) {
       setSavedValue(searchValue);
@@ -55,6 +44,18 @@ function App() {
 
   function handlePageChange(page: number) {
     navigate(`/?page=${page}`);
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-xl font-mono text-red-500">
+          {error instanceof Error
+            ? error.message
+            : 'An error occurred. Please try again later.'}
+        </p>
+      </div>
+    );
   }
 
   if (hasError) {
