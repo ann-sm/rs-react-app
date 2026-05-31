@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { Pokemon, PokemonData, PokemonResponse } from '../types';
 
+const CACHE_TTL = Number(import.meta.env.VITE_API_CACHE_TTL) || 60;
+
 export const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
 export const ITEMS_ON_PAGE = 20;
 export const POKEMONS_TOTAL = 1350;
@@ -36,6 +38,7 @@ const transformPokemonData = (data: PokemonData): Pokemon => {
 export const pokemonApi = createApi({
   reducerPath: 'pokemonApi',
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
+  keepUnusedDataFor: CACHE_TTL,
   endpoints: (builder) => ({
     getPokemonList: builder.query<
       { items: Pokemon[]; itemsTotal: number },
