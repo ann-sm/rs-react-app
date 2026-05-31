@@ -52,6 +52,7 @@ export interface AppState {
 export interface CardListProps {
   pokemons: Pokemon[];
   isLoading: boolean;
+  isFetching: boolean;
 }
 
 export interface CardProps {

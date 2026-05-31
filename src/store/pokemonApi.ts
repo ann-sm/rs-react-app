@@ -7,21 +7,6 @@ export const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
 export const ITEMS_ON_PAGE = 20;
 export const POKEMONS_TOTAL = 1350;
 
-const fetchPokemonList = async (limit: number, offset: number) => {
-  const response = await fetch(`${BASE_URL}?limit=${limit}&offset=${offset}`);
-  if (!response.ok) {
-    if (response.status >= 500) {
-      throw new Error('Server error. Try again later.');
-    }
-    if (response.status >= 400) {
-      throw new Error('Client error. Try again later.');
-    }
-  }
-  const data: { results: PokemonResponse[]; count: number } =
-    await response.json();
-  return data;
-};
-
 const transformPokemonData = (data: PokemonData): Pokemon => {
   return {
     id: data.id,
@@ -38,24 +23,38 @@ const transformPokemonData = (data: PokemonData): Pokemon => {
 export const pokemonApi = createApi({
   reducerPath: 'pokemonApi',
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
+  tagTypes: ['PokemonList', 'Pokemon'],
   keepUnusedDataFor: CACHE_TTL,
   endpoints: (builder) => ({
     getPokemonList: builder.query<
       { items: Pokemon[]; itemsTotal: number },
       { searchValue: string; page: number }
     >({
-      async queryFn({ searchValue, page }) {
-        if (!searchValue) {
-          const limit = ITEMS_ON_PAGE;
-          const offset = (page - 1) * limit;
+      async queryFn({ searchValue, page }, _api, _extraOptions, fetchWithBQ) {
+        const limit = ITEMS_ON_PAGE;
+        const offset = (page - 1) * limit;
 
-          const data = await fetchPokemonList(limit, offset);
+        if (!searchValue) {
+          const response = await fetchWithBQ(
+            `?limit=${limit}&offset=${offset}`
+          );
+          if (response.error) {
+            return { error: response.error };
+          }
+
+          const data = response.data as {
+            results: PokemonResponse[];
+            count: number;
+          };
 
           const items = await Promise.all(
             data.results.map(async (item) => {
-              const response = await fetch(item.url);
-              const data: PokemonData = await response.json();
-              return transformPokemonData(data);
+              const pokemonId = item.url.split('/').filter(Boolean).pop();
+              const response = await fetchWithBQ(`/${pokemonId}`);
+              if (response.error) {
+                throw new Error(`Failed to fetch pokemon ${pokemonId}`);
+              }
+              return transformPokemonData(response.data as PokemonData);
             })
           );
           const itemsTotal = data.count;
@@ -63,31 +62,38 @@ export const pokemonApi = createApi({
         }
 
         // Search by name
-        const limit = POKEMONS_TOTAL;
-        const offset = 0;
+        const response = await fetchWithBQ(`?limit=${POKEMONS_TOTAL}&offset=0`);
+        if (response.error) {
+          return { error: response.error };
+        }
 
-        const res = await fetchPokemonList(limit, offset);
+        const data = response.data as { results: PokemonResponse[] };
 
-        const filteredData = res.results.filter((item) =>
+        const filteredData = data.results.filter((item) =>
           item.name.toLowerCase().includes(searchValue.toLowerCase())
         );
         const paginatedData = filteredData.slice(offset, offset + limit);
         const items = await Promise.all(
           paginatedData.map(async (item) => {
-            const response = await fetch(item.url);
-            const data: PokemonData = await response.json();
-            return transformPokemonData(data);
+            const pokemonId = item.url.split('/').filter(Boolean).pop();
+            const response = await fetchWithBQ(`/${pokemonId}`);
+            if (response.error) {
+              throw new Error(`Failed to fetch pokemon ${pokemonId}`);
+            }
+            return transformPokemonData(response.data as PokemonData);
           })
         );
         const itemsTotal = filteredData.length;
         return { data: { items, itemsTotal } };
       },
+      providesTags: ['PokemonList'],
     }),
 
     getPokemon: builder.query<Pokemon, string>({
       query: (id) => `/${id}`,
       transformResponse: (response: PokemonData) =>
         transformPokemonData(response),
+      providesTags: (_result, _error, id) => [{ type: 'Pokemon', id }],
     }),
   }),
 });

@@ -14,7 +14,7 @@ function App() {
   const page = Number(searchParams.get('page') || '1');
   const detailsId = searchParams.get('details');
 
-  const { data, isLoading, error } = useGetPokemonListQuery({
+  const { data, isLoading, isFetching, error } = useGetPokemonListQuery({
     searchValue: savedValue,
     page,
   });
@@ -77,7 +77,11 @@ function App() {
               : 'flex flex-col w-full h-full items-center'
           }
         >
-          <CardList pokemons={pokemons} isLoading={isLoading} />
+          <CardList
+            pokemons={pokemons}
+            isLoading={isLoading}
+            isFetching={isFetching}
+          />
         </section>
         {detailsId && (
           <section className="w-1/4 mr-8">

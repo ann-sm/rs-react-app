@@ -2,8 +2,8 @@ import Card from '../Card/Card';
 import type { CardListProps } from '../../types';
 import Loader from '../Loader/Loader';
 
-function CardList({ pokemons, isLoading }: CardListProps) {
-  if (isLoading) {
+function CardList({ pokemons, isLoading, isFetching }: CardListProps) {
+  if (isLoading || isFetching) {
     return <Loader />;
   }
   return (

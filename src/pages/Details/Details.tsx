@@ -10,7 +10,7 @@ function Details() {
   const detailsId = searchParams.get('details');
   const page = searchParams.get('page') || '1';
 
-  const { data, isLoading } = useGetPokemonQuery(detailsId ?? '', {
+  const { data, isLoading, isFetching } = useGetPokemonQuery(detailsId ?? '', {
     skip: !detailsId,
   });
   const pokemon = data;
@@ -21,7 +21,7 @@ function Details() {
 
   return (
     <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
-      {!pokemon || isLoading ? (
+      {!pokemon || isLoading || isFetching ? (
         <Loader />
       ) : (
         <div>
