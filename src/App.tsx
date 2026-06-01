@@ -6,7 +6,7 @@ import Pagination from './components/Pagination/Pagination';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import Flyout from './components/Flyout/Flyout';
 import { useAppSelector } from './store/hooks';
-import { ITEMS_ON_PAGE, useGetPokemonListQuery } from './store/pokemonApi';
+import { ITEMS_ON_PAGE, useGetPokemonListQuery } from './services/pokemonApi';
 
 function App() {
   const [savedValue, setSavedValue] = useLocalStorage();

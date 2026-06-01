@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../contexts/theme/useTheme';
 import { useAppDispatch } from '../../store/hooks';
-import { pokemonApi } from '../../store/pokemonApi';
+import { pokemonApi } from '../../services/pokemonApi';
 
 function Header() {
   const { theme, toggleTheme } = useTheme();

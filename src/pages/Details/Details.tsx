@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Loader from '../../components/Loader/Loader';
 import Audio from '../../components/Audio/Audio';
-import { useGetPokemonQuery } from '../../store/pokemonApi';
+import { useGetPokemonQuery } from '../../services/pokemonApi';
 
 function Details() {
   const navigate = useNavigate();
