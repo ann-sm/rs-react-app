@@ -2,26 +2,67 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Loader from '../../components/Loader/Loader';
 import Audio from '../../components/Audio/Audio';
 import { useGetPokemonQuery } from '../../services/pokemonApi';
+import ErrorComponent from '../../components/ErrorComponent/ErrorComponent';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { useState } from 'react';
 
 function Details() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [isRetrying, setIsRetrying] = useState(false);
 
-  const detailsId = searchParams.get('details');
   const page = searchParams.get('page') || '1';
+  const detailsId = searchParams.get('details');
+  const isValidId =
+    detailsId && !isNaN(Number(detailsId)) && Number(detailsId) > 0;
 
-  const { data, isLoading, isFetching } = useGetPokemonQuery(detailsId ?? '', {
+  const {
+    data: pokemon,
+    isLoading,
+    isFetching,
+    error,
+    refetch,
+  } = useGetPokemonQuery(detailsId || '', {
     skip: !detailsId,
   });
-  const pokemon = data;
 
   function closeModal() {
     navigate(`/?page=${page}`);
   }
 
+  async function handleRetry() {
+    setIsRetrying(true);
+    try {
+      await refetch();
+    } finally {
+      setIsRetrying(false);
+    }
+  }
+
+  const ValidationError = !isValidId
+    ? ({
+        status: 404,
+        error: 'Invalid Pokemon ID',
+      } as unknown as FetchBaseQueryError)
+    : error;
+
+  if ((!isValidId || error) && !isRetrying) {
+    return (
+      <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
+        <ErrorComponent error={ValidationError} onRetry={handleRetry} />
+        <button
+          onClick={closeModal}
+          className="absolute top-4 right-6 text-2xl text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:cursor-pointer"
+        >
+          ×
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
-      {!pokemon || isLoading || isFetching ? (
+      {!pokemon || isLoading || isFetching || isRetrying ? (
         <Loader />
       ) : (
         <div>

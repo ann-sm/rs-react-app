@@ -7,23 +7,24 @@ import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import Flyout from './components/Flyout/Flyout';
 import { useAppSelector } from './store/hooks';
 import { ITEMS_ON_PAGE, useGetPokemonListQuery } from './services/pokemonApi';
+import ErrorComponent from './components/ErrorComponent/ErrorComponent';
 
 function App() {
   const [savedValue, setSavedValue] = useLocalStorage();
+  const [hasError, setHasError] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') || '1');
   const detailsId = searchParams.get('details');
+  const navigate = useNavigate();
 
-  const { data, isLoading, isFetching, error } = useGetPokemonListQuery({
-    searchValue: savedValue,
-    page,
-  });
+  const { data, isLoading, isFetching, error, refetch } =
+    useGetPokemonListQuery({
+      searchValue: savedValue,
+      page,
+    });
 
   const pokemons = data?.items ?? [];
   const totalPages = Math.ceil((data?.itemsTotal ?? 0) / ITEMS_ON_PAGE);
-  const [hasError, setHasError] = useState(false);
-
-  const navigate = useNavigate();
 
   const selectedPokemons = useAppSelector(
     (state) => state.selectedPokemons.selectedPokemons
@@ -48,13 +49,9 @@ function App() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-xl font-mono text-red-500">
-          {error instanceof Error
-            ? error.message
-            : 'An error occurred. Please try again later.'}
-        </p>
-      </div>
+      <main className="flex items-center justify-center h-screen p-4 bg-gray-100 dark:bg-teal-950">
+        <ErrorComponent error={error} onRetry={() => refetch()} />
+      </main>
     );
   }
 

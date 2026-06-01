@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { Pokemon, PokemonData, PokemonResponse } from '../types';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const CACHE_TTL = Number(import.meta.env.VITE_API_CACHE_TTL) || 60;
 
@@ -47,18 +48,33 @@ export const pokemonApi = createApi({
             count: number;
           };
 
-          const items = await Promise.all(
-            data.results.map(async (item) => {
-              const pokemonId = item.url.split('/').filter(Boolean).pop();
-              const response = await fetchWithBQ(`/${pokemonId}`);
-              if (response.error) {
-                throw new Error(`Failed to fetch pokemon ${pokemonId}`);
-              }
-              return transformPokemonData(response.data as PokemonData);
-            })
-          );
-          const itemsTotal = data.count;
-          return { data: { items, itemsTotal } };
+          try {
+            const items = await Promise.all(
+              data.results.map(async (item) => {
+                const pokemonId = item.url.split('/').filter(Boolean).pop();
+                const response = await fetchWithBQ(`/${pokemonId}`);
+                if (response.error) {
+                  throw response.error;
+                }
+                return transformPokemonData(response.data as PokemonData);
+              })
+            );
+            const itemsTotal = data.count;
+            return { data: { items, itemsTotal } };
+          } catch (error) {
+            if (error && typeof error === 'object' && 'status' in error) {
+              return { error: error as FetchBaseQueryError };
+            }
+            return {
+              error: {
+                status: 'FETCH_ERROR',
+                error:
+                  error instanceof Error
+                    ? error.message
+                    : 'Failed to fetch pokemon details',
+              } as FetchBaseQueryError,
+            };
+          }
         }
 
         // Search by name
@@ -73,18 +89,34 @@ export const pokemonApi = createApi({
           item.name.toLowerCase().includes(searchValue.toLowerCase())
         );
         const paginatedData = filteredData.slice(offset, offset + limit);
-        const items = await Promise.all(
-          paginatedData.map(async (item) => {
-            const pokemonId = item.url.split('/').filter(Boolean).pop();
-            const response = await fetchWithBQ(`/${pokemonId}`);
-            if (response.error) {
-              throw new Error(`Failed to fetch pokemon ${pokemonId}`);
-            }
-            return transformPokemonData(response.data as PokemonData);
-          })
-        );
-        const itemsTotal = filteredData.length;
-        return { data: { items, itemsTotal } };
+
+        try {
+          const items = await Promise.all(
+            paginatedData.map(async (item) => {
+              const pokemonId = item.url.split('/').filter(Boolean).pop();
+              const response = await fetchWithBQ(`/${pokemonId}`);
+              if (response.error) {
+                throw response.error;
+              }
+              return transformPokemonData(response.data as PokemonData);
+            })
+          );
+          const itemsTotal = filteredData.length;
+          return { data: { items, itemsTotal } };
+        } catch (error) {
+          if (error && typeof error === 'object' && 'status' in error) {
+            return { error: error as FetchBaseQueryError };
+          }
+          return {
+            error: {
+              status: 'FETCH_ERROR',
+              error:
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to fetch pokemon details',
+            } as FetchBaseQueryError,
+          };
+        }
       },
       providesTags: ['PokemonList'],
     }),

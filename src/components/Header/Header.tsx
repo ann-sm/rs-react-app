@@ -65,7 +65,7 @@ function Header() {
                 pokemonApi.util.invalidateTags(['PokemonList', 'Pokemon'])
               )
             }
-            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover: cursor-pointer hover:bg-teal-800 transition-colors duration-200"
+            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:cursor-pointer hover:bg-teal-800 transition-colors duration-200 font-mono"
           >
             Refresh
           </button>
