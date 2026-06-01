@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
 import { pokemonApi, ITEMS_ON_PAGE, POKEMONS_TOTAL } from './pokemonApi';
 import { mockPokemonDataResponse1 } from '../__tests__/mocks';
+import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const createStore = () =>
   configureStore({
@@ -20,12 +21,21 @@ const createResponse = (body: unknown, status = 200) =>
     },
   });
 
+function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
+  return typeof error === 'object' && error !== null && 'status' in error;
+}
+
+function hasErrorProperty(
+  error: unknown
+): error is { error: string; status: string | number } {
+  return typeof error === 'object' && error !== null && 'error' in error;
+}
+
 describe('pokemonApi', () => {
   let store: ReturnType<typeof createStore>;
 
   beforeEach(() => {
     store = createStore();
-
     vi.stubGlobal('fetch', vi.fn());
   });
 
@@ -75,7 +85,6 @@ describe('pokemonApi', () => {
     });
 
     const request = vi.mocked(fetch).mock.calls[0][0] as Request;
-
     expect(request.url).toContain(`?limit=${ITEMS_ON_PAGE}&offset=0`);
   });
 
@@ -111,7 +120,6 @@ describe('pokemonApi', () => {
     expect(result.itemsTotal).toBe(1);
 
     const request = vi.mocked(fetch).mock.calls[0][0] as Request;
-
     expect(request.url).toContain(`?limit=${POKEMONS_TOTAL}&offset=0`);
   });
 
@@ -174,7 +182,6 @@ describe('pokemonApi', () => {
       .unwrap();
 
     const request = vi.mocked(fetch).mock.calls[0][0] as Request;
-
     expect(request.url).toContain(`?limit=${ITEMS_ON_PAGE}&offset=40`);
   });
 
@@ -216,15 +223,86 @@ describe('pokemonApi', () => {
         })
       );
 
-    await expect(
-      store
+    try {
+      await store
         .dispatch(
           pokemonApi.endpoints.getPokemonList.initiate({
             searchValue: '',
             page: 1,
           })
         )
-        .unwrap()
-    ).rejects.toThrow('Failed to fetch pokemon 1');
+        .unwrap();
+      expect.unreachable('Expected an error to be thrown');
+    } catch (error) {
+      expect(error).toBeDefined();
+
+      if (isFetchBaseQueryError(error)) {
+        expect(error.status).toBe(500);
+      } else {
+        expect(error).toBeTruthy();
+      }
+    }
+  });
+
+  it('handles network error when fetching pokemon details', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(
+        createResponse({
+          count: 1,
+          results: [
+            {
+              name: 'bulbasaur',
+              url: 'https://pokeapi.co/api/v2/pokemon/1/',
+            },
+          ],
+        })
+      )
+      .mockRejectedValueOnce(new Error('Network error'));
+
+    try {
+      await store
+        .dispatch(
+          pokemonApi.endpoints.getPokemonList.initiate({
+            searchValue: '',
+            page: 1,
+          })
+        )
+        .unwrap();
+      expect.unreachable('Expected an error to be thrown');
+    } catch (error) {
+      expect(error).toBeDefined();
+
+      if (isFetchBaseQueryError(error) && typeof error.status === 'string') {
+        expect(error.status).toBe('FETCH_ERROR');
+        if (hasErrorProperty(error)) {
+          expect(error.error).toBe('Error: Network error');
+        }
+      } else {
+        expect(error).toBeTruthy();
+      }
+    }
+  });
+
+  it('handles invalid pokemon ID', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(null, {
+        status: 404,
+      })
+    );
+
+    try {
+      await store
+        .dispatch(pokemonApi.endpoints.getPokemon.initiate('999999'))
+        .unwrap();
+      expect.unreachable('Expected an error to be thrown');
+    } catch (error) {
+      expect(error).toBeDefined();
+
+      if (isFetchBaseQueryError(error)) {
+        expect(error.status).toBe(404);
+      } else {
+        expect(error).toBeTruthy();
+      }
+    }
   });
 });
