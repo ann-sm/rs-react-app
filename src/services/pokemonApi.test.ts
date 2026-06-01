@@ -1,7 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { configureStore } from '@reduxjs/toolkit';
-import { pokemonApi, ITEMS_ON_PAGE, POKEMONS_TOTAL } from './pokemonApi';
-import { mockPokemonDataResponse1 } from '../__tests__/mocks';
+import {
+  pokemonApi,
+  ITEMS_ON_PAGE,
+  POKEMONS_TOTAL,
+  BASE_URL,
+} from './pokemonApi';
+import {
+  mockData,
+  mockPokemonDataResponse1,
+  mockPokemonDataResponse4,
+  mockPokemonResponse,
+} from '../__tests__/mocks';
 import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const createStore = () =>
@@ -45,18 +55,9 @@ describe('pokemonApi', () => {
 
   it('fetches pokemon list without search', async () => {
     vi.mocked(fetch)
-      .mockResolvedValueOnce(
-        createResponse({
-          count: 1,
-          results: [
-            {
-              name: 'bulbasaur',
-              url: 'https://pokeapi.co/api/v2/pokemon/1/',
-            },
-          ],
-        })
-      )
-      .mockResolvedValueOnce(createResponse(mockPokemonDataResponse1));
+      .mockResolvedValueOnce(createResponse(mockPokemonResponse))
+      .mockResolvedValueOnce(createResponse(mockPokemonDataResponse1))
+      .mockResolvedValueOnce(createResponse(mockPokemonDataResponse4));
 
     const result = await store
       .dispatch(
@@ -67,22 +68,7 @@ describe('pokemonApi', () => {
       )
       .unwrap();
 
-    expect(result).toEqual({
-      items: [
-        {
-          id: 1,
-          name: 'bulbasaur',
-          height: 7,
-          weight: 69,
-          image:
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
-          abilities: ['overgrow', 'chlorophyll'],
-          types: ['grass', 'poison'],
-          cry: 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/1.ogg',
-        },
-      ],
-      itemsTotal: 1,
-    });
+    expect(result).toEqual(mockData);
 
     const request = vi.mocked(fetch).mock.calls[0][0] as Request;
     expect(request.url).toContain(`?limit=${ITEMS_ON_PAGE}&offset=0`);
@@ -90,20 +76,7 @@ describe('pokemonApi', () => {
 
   it('filters pokemon by search term', async () => {
     vi.mocked(fetch)
-      .mockResolvedValueOnce(
-        createResponse({
-          results: [
-            {
-              name: 'bulbasaur',
-              url: 'https://pokeapi.co/api/v2/pokemon/1/',
-            },
-            {
-              name: 'charmander',
-              url: 'https://pokeapi.co/api/v2/pokemon/4/',
-            },
-          ],
-        })
-      )
+      .mockResolvedValueOnce(createResponse(mockPokemonResponse))
       .mockResolvedValueOnce(createResponse(mockPokemonDataResponse1));
 
     const result = await store
@@ -116,7 +89,7 @@ describe('pokemonApi', () => {
       .unwrap();
 
     expect(result.items).toHaveLength(1);
-    expect(result.items[0].name).toBe('bulbasaur');
+    expect(result.items[0].name).toBe('Bulbasaur');
     expect(result.itemsTotal).toBe(1);
 
     const request = vi.mocked(fetch).mock.calls[0][0] as Request;
@@ -153,7 +126,7 @@ describe('pokemonApi', () => {
 
     expect(result).toEqual({
       id: 1,
-      name: 'bulbasaur',
+      name: 'Bulbasaur',
       height: 7,
       weight: 69,
       image:
@@ -304,5 +277,59 @@ describe('pokemonApi', () => {
         expect(error).toBeTruthy();
       }
     }
+  });
+
+  const mockSinglePokemonListFetch = () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(
+        createResponse({
+          count: 1,
+          results: [
+            {
+              name: 'bulbasaur',
+              url: `${BASE_URL}/1/`,
+            },
+          ],
+        })
+      )
+      .mockResolvedValueOnce(createResponse(mockPokemonDataResponse1));
+  };
+
+  const listArgs = { searchValue: '', page: 1 };
+
+  it('reuses cached list data for the same args', async () => {
+    mockSinglePokemonListFetch();
+
+    const first = await store
+      .dispatch(pokemonApi.endpoints.getPokemonList.initiate(listArgs))
+      .unwrap();
+
+    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(2);
+
+    const second = await store
+      .dispatch(pokemonApi.endpoints.getPokemonList.initiate(listArgs))
+      .unwrap();
+
+    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(2);
+    expect(second).toEqual(first);
+  });
+
+  it('refetches after invalidateTags', async () => {
+    mockSinglePokemonListFetch();
+    mockSinglePokemonListFetch();
+
+    await store
+      .dispatch(pokemonApi.endpoints.getPokemonList.initiate(listArgs))
+      .unwrap();
+
+    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(2);
+
+    store.dispatch(pokemonApi.util.invalidateTags(['PokemonList']));
+
+    await store
+      .dispatch(pokemonApi.endpoints.getPokemonList.initiate(listArgs))
+      .unwrap();
+
+    expect(vi.mocked(fetch)).toHaveBeenCalledTimes(4);
   });
 });

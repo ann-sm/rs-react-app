@@ -222,4 +222,27 @@ describe('App', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/?page=1');
     });
   });
+
+  it('displays a human-readable error when the list query fails', async () => {
+    const refetch = vi.fn();
+
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: { status: 500 },
+      refetch,
+    });
+
+    renderApp();
+
+    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByText('Server error. Please try again later.')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /try again/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
+  });
 });

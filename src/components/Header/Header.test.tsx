@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Header from './Header';
@@ -6,23 +6,7 @@ import { ThemeProvider } from '../../contexts/theme/ThemeProvider';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { store } from '../../store/store';
-
-vi.mock('../../store/pokemonApi', () => ({
-  pokemonApi: {
-    util: {
-      invalidateTags: vi.fn(),
-    },
-  },
-  useGetPokemonListQuery: vi.fn(() => ({
-    data: null,
-    isLoading: false,
-    error: null,
-  })),
-  useGetPokemonQuery: vi.fn(() => ({
-    data: null,
-    isLoading: false,
-  })),
-}));
+import { pokemonApi } from '../../services/pokemonApi';
 
 const renderHeader = () => {
   render(
@@ -38,6 +22,14 @@ const renderHeader = () => {
 
 describe('Header', () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    vi.spyOn(pokemonApi.util, 'invalidateTags');
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   it('renders the PokéSearch title', () => {
     renderHeader();
@@ -78,5 +70,17 @@ describe('Header', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Toggle light mode')).toBeInTheDocument();
     });
+  });
+
+  it('invalidates pokemon cache when Refresh is clicked', async () => {
+    renderHeader();
+
+    await user.click(screen.getByRole('button', { name: 'Refresh' }));
+
+    expect(pokemonApi.util.invalidateTags).toHaveBeenCalledTimes(1);
+    expect(pokemonApi.util.invalidateTags).toHaveBeenCalledWith([
+      'PokemonList',
+      'Pokemon',
+    ]);
   });
 });

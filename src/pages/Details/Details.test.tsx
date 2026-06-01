@@ -154,4 +154,97 @@ describe('Details', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('/?page=2');
   });
+
+  it('displays a human-readable error when the detail query fails', () => {
+    const refetch = vi.fn().mockResolvedValue({});
+
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: { status: 500 },
+      refetch,
+    });
+
+    renderDetails('1');
+
+    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByText('Server error. Please try again later.')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /try again/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('animate-spin')).not.toBeInTheDocument();
+  });
+
+  it('displays a human-readable error for an invalid pokemon id', () => {
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+
+    renderDetails('invalid');
+
+    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByText('Pokemon not found. Please try a different search.')
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText('animate-spin')).not.toBeInTheDocument();
+  });
+
+  it('calls refetch when Try Again is clicked on API error', async () => {
+    const refetch = vi.fn().mockResolvedValue({});
+
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: { status: 500 },
+      refetch,
+    });
+
+    renderDetails('1');
+
+    await userEvent.click(screen.getByRole('button', { name: /try again/i }));
+
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows loader while refetching when isFetching is true', () => {
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: mockData.items[0],
+      isLoading: false,
+      isFetching: true,
+      error: null,
+      refetch: vi.fn(),
+    });
+
+    renderDetails('1');
+
+    expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
+  });
+
+  it('displays a human-readable error when the pokemon is not found', () => {
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: { status: 404, data: 'Not Found' },
+      refetch: vi.fn(),
+    });
+
+    renderDetails('999');
+
+    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByText('Pokemon not found. Please try a different search.')
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
+  });
 });

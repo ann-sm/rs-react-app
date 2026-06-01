@@ -106,14 +106,13 @@ export const mockPokemonResponse = {
   results: [
     { name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' },
     { name: 'charmander', url: 'https://pokeapi.co/api/v2/pokemon/4/' },
-    { name: 'wartortle', url: 'https://pokeapi.co/api/v2/pokemon/8/' },
   ],
-  count: 3,
+  count: 2,
 };
 
 export const mockPokemonDataResponse1 = {
   id: 1,
-  name: 'bulbasaur',
+  name: 'Bulbasaur',
   height: 7,
   weight: 69,
   sprites: {
@@ -137,7 +136,7 @@ export const mockPokemonDataResponse1 = {
 
 export const mockPokemonDataResponse4 = {
   id: 4,
-  name: 'charmander',
+  name: 'Charmander',
   height: 6,
   weight: 85,
   sprites: {
