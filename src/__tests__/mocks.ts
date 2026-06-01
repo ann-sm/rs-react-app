@@ -31,6 +31,7 @@ export const mockData: { items: Pokemon[]; itemsTotal: number } = {
 export const mockCardList: CardListProps = {
   pokemons: mockData.items,
   isLoading: false,
+  isFetching: false,
 };
 
 export const mockCardListPropsMissing: CardListProps = {
@@ -57,6 +58,7 @@ export const mockCardListPropsMissing: CardListProps = {
     },
   ],
   isLoading: false,
+  isFetching: false,
 };
 
 export const mockCard: CardProps = {
