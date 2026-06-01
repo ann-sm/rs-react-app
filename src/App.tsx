@@ -71,7 +71,7 @@ function App() {
           className={
             detailsId
               ? 'flex flex-col w-3/4 h-full items-center'
-              : 'flex flex-col w-full h-full items-center'
+              : 'flex flex-col w-full h-full px-24 items-center'
           }
         >
           <CardList
