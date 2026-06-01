@@ -1,63 +1,65 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter, useNavigate, useSearchParams } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import Details from './Details';
-import { fetchPokemonData } from '../../services/api';
 import { CardPropsMissing, mockData } from '../../__tests__/mocks';
+
+const mockUseGetPokemonQuery = vi.fn();
+
+vi.mock('../../services/pokemonApi', () => ({
+  useGetPokemonQuery: () => mockUseGetPokemonQuery(),
+}));
+
+const mockNavigate = vi.fn();
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: vi.fn(),
-    useSearchParams: vi.fn(),
+    useNavigate: () => mockNavigate,
   };
 });
 
-vi.mock('../../services/api', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...(actual as Record<string, unknown>),
-    fetchPokemonData: vi.fn(),
-  };
-});
+const renderDetails = (detailsId: string | null, page: string = '1') => {
+  const initialEntry = detailsId ? `/?details=${detailsId}&page=${page}` : '/';
+
+  render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <Details />
+    </MemoryRouter>
+  );
+};
 
 describe('Details', () => {
-  const mockNavigate = vi.fn();
-  let mockSearchParams;
-
   beforeEach(() => {
     vi.clearAllMocks();
     mockNavigate.mockClear();
-    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+    mockUseGetPokemonQuery.mockClear();
   });
 
-  it('renders loader when no pokemon data', async () => {
-    mockSearchParams = new URLSearchParams({ details: '1', page: '1' });
-    vi.mocked(useSearchParams).mockReturnValue([mockSearchParams, vi.fn()]);
-
-    render(
-      <MemoryRouter>
-        <Details />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
+  it('renders loader when no pokemon data', () => {
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: true,
+      isFetching: true,
+      error: null,
     });
+
+    renderDetails('1');
+
+    expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
   });
 
   it('fetches and displays pokemon details', async () => {
-    mockSearchParams = new URLSearchParams({ details: '1', page: '1' });
-    vi.mocked(useSearchParams).mockReturnValue([mockSearchParams, vi.fn()]);
-    vi.mocked(fetchPokemonData).mockResolvedValue(mockData.items[0]);
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: mockData.items[0],
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
-    render(
-      <MemoryRouter>
-        <Details />
-      </MemoryRouter>
-    );
+    renderDetails('1', '1');
 
     await waitFor(() => {
       expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
@@ -72,20 +74,18 @@ describe('Details', () => {
   });
 
   it('displays fallback text when image is missing', async () => {
-    mockSearchParams = new URLSearchParams({ details: '1', page: '1' });
-    vi.mocked(useSearchParams).mockReturnValue([mockSearchParams, vi.fn()]);
-    vi.mocked(fetchPokemonData).mockResolvedValue(mockData.items[0]);
     const pokemonWithoutImage = {
       ...mockData.items[0],
       image: '',
     };
-    vi.mocked(fetchPokemonData).mockResolvedValue(pokemonWithoutImage);
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: pokemonWithoutImage,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
-    render(
-      <MemoryRouter>
-        <Details />
-      </MemoryRouter>
-    );
+    renderDetails('1');
 
     await waitFor(() => {
       expect(screen.getByText('No image available')).toBeInTheDocument();
@@ -96,15 +96,14 @@ describe('Details', () => {
   });
 
   it('displays fallback for missing data fields', async () => {
-    mockSearchParams = new URLSearchParams({ details: '1', page: '1' });
-    vi.mocked(useSearchParams).mockReturnValue([mockSearchParams, vi.fn()]);
-    vi.mocked(fetchPokemonData).mockResolvedValue(CardPropsMissing.data);
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: CardPropsMissing.data,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
-    render(
-      <MemoryRouter>
-        <Details />
-      </MemoryRouter>
-    );
+    renderDetails('1');
 
     await waitFor(() => {
       expect(screen.getByText('types: n/a')).toBeInTheDocument();
@@ -115,20 +114,18 @@ describe('Details', () => {
   });
 
   it('does not render audio when cry is missing', async () => {
-    mockSearchParams = new URLSearchParams({ details: '1', page: '1' });
-    vi.mocked(useSearchParams).mockReturnValue([mockSearchParams, vi.fn()]);
-
     const pokemonWithoutCry = {
       ...mockData.items[0],
       cry: '',
     };
-    vi.mocked(fetchPokemonData).mockResolvedValue(pokemonWithoutCry);
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: pokemonWithoutCry,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
-    render(
-      <MemoryRouter>
-        <Details />
-      </MemoryRouter>
-    );
+    renderDetails('1');
 
     await waitFor(() => {
       expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
@@ -139,15 +136,14 @@ describe('Details', () => {
   });
 
   it('closes modal when close button is clicked', async () => {
-    mockSearchParams = new URLSearchParams({ details: '1', page: '2' });
-    vi.mocked(useSearchParams).mockReturnValue([mockSearchParams, vi.fn()]);
-    vi.mocked(fetchPokemonData).mockResolvedValue(mockData.items[0]);
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: mockData.items[0],
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
-    render(
-      <MemoryRouter>
-        <Details />
-      </MemoryRouter>
-    );
+    renderDetails('1', '2');
 
     await waitFor(() => {
       expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
@@ -157,5 +153,98 @@ describe('Details', () => {
     await userEvent.click(closeButton);
 
     expect(mockNavigate).toHaveBeenCalledWith('/?page=2');
+  });
+
+  it('displays a human-readable error when the detail query fails', () => {
+    const refetch = vi.fn().mockResolvedValue({});
+
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: { status: 500 },
+      refetch,
+    });
+
+    renderDetails('1');
+
+    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByText('Server error. Please try again later.')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /try again/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('animate-spin')).not.toBeInTheDocument();
+  });
+
+  it('displays a human-readable error for an invalid pokemon id', () => {
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+
+    renderDetails('invalid');
+
+    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByText('Pokemon not found. Please try a different search.')
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText('animate-spin')).not.toBeInTheDocument();
+  });
+
+  it('calls refetch when Try Again is clicked on API error', async () => {
+    const refetch = vi.fn().mockResolvedValue({});
+
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: { status: 500 },
+      refetch,
+    });
+
+    renderDetails('1');
+
+    await userEvent.click(screen.getByRole('button', { name: /try again/i }));
+
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows loader while refetching when isFetching is true', () => {
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: mockData.items[0],
+      isLoading: false,
+      isFetching: true,
+      error: null,
+      refetch: vi.fn(),
+    });
+
+    renderDetails('1');
+
+    expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
+  });
+
+  it('displays a human-readable error when the pokemon is not found', () => {
+    mockUseGetPokemonQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: { status: 404, data: 'Not Found' },
+      refetch: vi.fn(),
+    });
+
+    renderDetails('999');
+
+    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByText('Pokemon not found. Please try a different search.')
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
   });
 });

@@ -1,20 +1,36 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { fetchPokemonList } from './services/api';
-import App from './App';
-import { mockData } from './__tests__/mocks';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter, useNavigate } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from './store/store';
 
-vi.mock('./services/api', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...(actual as Record<string, unknown>),
-    fetchPokemonList: vi.fn(),
-  };
-});
+const { mockUseGetPokemonListQuery, mockNavigate } = vi.hoisted(() => ({
+  mockUseGetPokemonListQuery: vi.fn(),
+  mockNavigate: vi.fn(),
+}));
+
+vi.mock('./services/pokemonApi', () => ({
+  pokemonApi: {
+    reducerPath: 'pokemonApi',
+    reducer: (state = {}) => state,
+    middleware:
+      () => (next: (action: unknown) => unknown) => (action: unknown) =>
+        next(action),
+    util: {
+      invalidateTags: vi.fn(),
+    },
+  },
+
+  useGetPokemonListQuery: mockUseGetPokemonListQuery,
+  useGetPokemonQuery: () => ({
+    data: null,
+    isLoading: false,
+    isFetching: false,
+    error: null,
+  }),
+  ITEMS_ON_PAGE: 20,
+  BASE_URL: 'https://pokeapi.co/api/v2/pokemon',
+}));
 
 vi.mock('react-router-dom', async () => {
   const actual =
@@ -23,16 +39,18 @@ vi.mock('react-router-dom', async () => {
     );
   return {
     ...actual,
-    useNavigate: vi.fn(),
+    useNavigate: () => mockNavigate,
   };
 });
 
-const mockNavigate = vi.fn();
+import App from './App';
+import { store } from './store/store';
+import { mockData } from './__tests__/mocks';
 
-const renderApp = () => {
-  render(
+const renderApp = (initialEntry = '/') => {
+  return render(
     <Provider store={store}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <App />
       </MemoryRouter>
     </Provider>
@@ -43,17 +61,21 @@ describe('App', () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
-    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
     localStorage.clear();
     vi.clearAllMocks();
+    mockUseGetPokemonListQuery.mockReset();
   });
 
   it('makes initial API call on component mount', async () => {
-    vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: mockData,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
 
     renderApp();
 
-    expect(fetchPokemonList).toHaveBeenCalledWith('', 1);
     await waitFor(() => {
       expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
       expect(screen.getByText('Charmander')).toBeInTheDocument();
@@ -63,17 +85,28 @@ describe('App', () => {
   it('handles search term from localStorage on initial load', async () => {
     localStorage.setItem('ann-sm-pokemons', 'Bulbasaur');
 
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: { ...mockData, items: [mockData.items[0]], itemsTotal: 1 },
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
+
     renderApp();
 
     await waitFor(() => {
-      vi.mocked(fetchPokemonList).mockResolvedValue(mockData);
-      expect(fetchPokemonList).toHaveBeenCalledWith('Bulbasaur', 1);
+      expect(screen.getByDisplayValue('Bulbasaur')).toBeInTheDocument();
     });
-
-    expect(screen.getByDisplayValue('Bulbasaur')).toBeInTheDocument();
   });
 
   it('saves search term to localStorage and updates state on search', async () => {
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: mockData,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
+
     renderApp();
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
@@ -87,45 +120,72 @@ describe('App', () => {
     });
   });
 
-  it('manages loading states during API calls', async () => {
-    let resolvePromise: (value: typeof mockData) => void;
-    const promise = new Promise<typeof mockData>((resolve) => {
-      resolvePromise = resolve;
+  it('shows loading spinner when data is loading', async () => {
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: null,
+      isLoading: true,
+      isFetching: true,
+      error: null,
     });
-
-    vi.mocked(fetchPokemonList).mockReturnValue(promise);
 
     renderApp();
 
     expect(screen.getByLabelText('animate-spin')).toBeInTheDocument();
     expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
     expect(screen.queryByText('Charmander')).not.toBeInTheDocument();
+  });
 
-    resolvePromise!(mockData);
+  it('shows pokemon list when data is loaded', async () => {
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: mockData,
+      isLoading: false,
+      isFetching: false,
+      error: null,
+    });
+
+    renderApp();
 
     await waitFor(() => {
-      expect(screen.queryByLabelText('.animate-spin')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('animate-spin')).not.toBeInTheDocument();
       expect(screen.getByText('Bulbasaur')).toBeInTheDocument();
       expect(screen.getByText('Charmander')).toBeInTheDocument();
     });
   });
 
   it('calls API with correct parameters after search', async () => {
+    let capturedSearchValue = '';
+    let capturedPage = 0;
+
+    mockUseGetPokemonListQuery.mockImplementation(({ searchValue, page }) => {
+      capturedSearchValue = searchValue;
+      capturedPage = page;
+      return {
+        data: mockData,
+        isLoading: false,
+        isFetching: false,
+        error: null,
+      };
+    });
+
     renderApp();
     const input = screen.getByRole('searchbox');
     const button = screen.getByRole('button', { name: 'Search' });
 
     await user.type(input, 'bulbasaur');
     await user.click(button);
+
     await waitFor(() => {
-      expect(fetchPokemonList).toHaveBeenCalledWith('bulbasaur', 1);
+      expect(capturedSearchValue).toBe('bulbasaur');
+      expect(capturedPage).toBe(1);
     });
   });
 
   it('should navigate to next page', async () => {
-    vi.mocked(fetchPokemonList).mockResolvedValue({
-      ...mockData,
-      itemsTotal: 21,
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: { ...mockData, itemsTotal: 21 },
+      isLoading: false,
+      isFetching: false,
+      error: null,
     });
 
     renderApp();
@@ -142,24 +202,18 @@ describe('App', () => {
   });
 
   it('should navigate to previous page', async () => {
-    vi.mocked(fetchPokemonList).mockResolvedValue({
-      ...mockData,
-      itemsTotal: 21,
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: { ...mockData, itemsTotal: 21 },
+      isLoading: false,
+      isFetching: false,
+      error: null,
     });
 
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={['/?page=2']}>
-          <App />
-        </MemoryRouter>
-      </Provider>
-    );
+    renderApp('/?page=2');
 
     await waitFor(() => {
       expect(screen.queryByLabelText('animate-spin')).not.toBeInTheDocument();
     });
-
-    expect(fetchPokemonList).toHaveBeenCalledWith('', 2);
 
     const previousButton = screen.getByRole('button', { name: '<' });
     await user.click(previousButton);
@@ -167,5 +221,28 @@ describe('App', () => {
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/?page=1');
     });
+  });
+
+  it('displays a human-readable error when the list query fails', async () => {
+    const refetch = vi.fn();
+
+    mockUseGetPokemonListQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      isFetching: false,
+      error: { status: 500 },
+      refetch,
+    });
+
+    renderApp();
+
+    expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
+    expect(
+      screen.getByText('Server error. Please try again later.')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /try again/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Bulbasaur')).not.toBeInTheDocument();
   });
 });

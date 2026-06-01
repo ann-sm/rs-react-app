@@ -20,7 +20,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       return (
         <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-teal-950">
           <div className="flex flex-col flex-1 items-center justify-center">
-            <h1 className="text-4xl font-mono uppercase text-teal-700 dark:bg-teal-600">
+            <h1 className="text-4xl font-mono uppercase text-teal-700 dark:text-teal-600">
               Something went very wrong
             </h1>
             <p className="text-xl font-mono p-6 dark:text-gray-300">

@@ -1,26 +1,30 @@
 import { useEffect, useState } from 'react';
 import CardList from './components/CardList/CardList';
-import type { Pokemon } from './types';
-import { fetchPokemonList, ITEMS_ON_PAGE } from './services/api';
 import Search from './components/Search/Search';
 import useLocalStorage from './hooks/useLocalStorage';
 import Pagination from './components/Pagination/Pagination';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import Flyout from './components/Flyout/Flyout';
 import { useAppSelector } from './store/hooks';
+import { ITEMS_ON_PAGE, useGetPokemonListQuery } from './services/pokemonApi';
+import ErrorComponent from './components/ErrorComponent/ErrorComponent';
 
 function App() {
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   const [savedValue, setSavedValue] = useLocalStorage();
-  const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [totalPages, setTotalPages] = useState(1);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get('page') || '1');
   const detailsId = searchParams.get('details');
-
   const navigate = useNavigate();
+
+  const { data, isLoading, isFetching, error, refetch } =
+    useGetPokemonListQuery({
+      searchValue: savedValue,
+      page,
+    });
+
+  const pokemons = data?.items ?? [];
+  const totalPages = Math.ceil((data?.itemsTotal ?? 0) / ITEMS_ON_PAGE);
 
   const selectedPokemons = useAppSelector(
     (state) => state.selectedPokemons.selectedPokemons
@@ -32,20 +36,6 @@ function App() {
     }
   }, [searchParams, setSearchParams]);
 
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const data = await fetchPokemonList(savedValue, page);
-        setPokemons(data.items);
-        setTotalPages(Math.ceil(data.itemsTotal / ITEMS_ON_PAGE));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchData();
-  }, [savedValue, page]);
-
   function handleSearch(searchValue: string) {
     if (searchValue !== savedValue) {
       setSavedValue(searchValue);
@@ -55,6 +45,14 @@ function App() {
 
   function handlePageChange(page: number) {
     navigate(`/?page=${page}`);
+  }
+
+  if (error) {
+    return (
+      <main className="flex items-center justify-center h-screen p-4 bg-gray-100 dark:bg-teal-950">
+        <ErrorComponent error={error} onRetry={() => refetch()} />
+      </main>
+    );
   }
 
   if (hasError) {
@@ -73,10 +71,14 @@ function App() {
           className={
             detailsId
               ? 'flex flex-col w-3/4 h-full items-center'
-              : 'flex flex-col w-full h-full items-center'
+              : 'flex flex-col w-full h-full px-24 items-center'
           }
         >
-          <CardList pokemons={pokemons} isLoading={isLoading} />
+          <CardList
+            pokemons={pokemons}
+            isLoading={isLoading}
+            isFetching={isFetching}
+          />
         </section>
         {detailsId && (
           <section className="w-1/4 mr-8">
