@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 interface submitedData {
   id: string;
@@ -18,7 +18,7 @@ interface SubmissionsState {
 }
 
 const initialState: SubmissionsState = {
-  submissions: []
+  submissions: [],
 };
 
 export const submissionsSlice = createSlice({
@@ -27,9 +27,9 @@ export const submissionsSlice = createSlice({
   reducers: {
     addSubmission: (state, action: PayloadAction<submitedData>) => {
       state.submissions.push(action.payload);
-    }
-  }
-})
+    },
+  },
+});
 
 export const { addSubmission } = submissionsSlice.actions;
 export default submissionsSlice.reducer;

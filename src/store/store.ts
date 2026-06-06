@@ -3,8 +3,8 @@ import submissionsReducer from './submissionsSlice';
 
 export const store = configureStore({
   reducer: {
-    submissions: submissionsReducer
-  }
+    submissions: submissionsReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
