@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import './Modal.css';
 
@@ -9,6 +9,14 @@ interface ModalProps {
 }
 
 const Modal = ({ children, isOpen, onClose }: ModalProps) => {
+  const backdropRef = useRef<HTMLDivElement>(null);
+
+  const handleBackdropClick = (event: MouseEvent) => {
+    if (event.target === backdropRef.current) {
+      onClose();
+    }
+  };
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -24,8 +32,10 @@ const Modal = ({ children, isOpen, onClose }: ModalProps) => {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="backdrop" onClick={onClose}>
-      <div className="modal">{children}</div>
+    <div className="backdrop" ref={backdropRef} onClick={handleBackdropClick}>
+      <div role="dialog" className="modal">
+        {children}
+      </div>
     </div>,
     document.body
   );

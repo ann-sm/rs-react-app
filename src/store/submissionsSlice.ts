@@ -1,20 +1,20 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-interface submitedData {
-  id: string;
-  type: 'Uncontrolled' | 'RHF';
+export interface SubmitedData {
+  // id: string;
   name: string;
   age: number;
   email: string;
   gender: string;
-  acceptedTerms: boolean;
-  imageBase64: string;
-  country: string;
-  submittedAt: number;
+  termsAccepted: boolean;
+  // imageBase64: string;
+  // country: string;
+  submittedAt: string;
+  isNew: boolean;
 }
 
 interface SubmissionsState {
-  submissions: submitedData[];
+  submissions: SubmitedData[];
 }
 
 const initialState: SubmissionsState = {
@@ -25,7 +25,7 @@ export const submissionsSlice = createSlice({
   name: 'submissionsSlice',
   initialState,
   reducers: {
-    addSubmission: (state, action: PayloadAction<submitedData>) => {
+    addSubmission: (state, action: PayloadAction<SubmitedData>) => {
       state.submissions.push(action.payload);
     },
   },
