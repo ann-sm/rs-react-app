@@ -19,7 +19,7 @@ const Modal = ({ children, isOpen, onClose }: ModalProps) => {
     };
 
     document.addEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
