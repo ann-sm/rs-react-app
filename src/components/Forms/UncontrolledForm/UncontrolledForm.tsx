@@ -5,6 +5,7 @@ import {
 } from '../../../store/submissionsSlice';
 import { useAppDispatch } from '../../../store/hooks';
 import { store } from '../../../store/store';
+import '../Form.css';
 
 const UncontrolledForm = () => {
   const formRef = useRef<HTMLFormElement>(null);
@@ -36,29 +37,37 @@ const UncontrolledForm = () => {
     <form ref={formRef} onSubmit={handleSubmit} className="form">
       <div className="form-group">
         <label htmlFor="name">Name:</label>
-        <input type="text" id="name" name="name" />
+        <input type="text" id="name" name="name" autoComplete="off" />
       </div>
       <div className="form-group">
         <label htmlFor="age">Age:</label>
-        <input type="number" id="age" name="age" />
+        <input type="number" id="age" name="age" autoComplete="off" />
       </div>
       <div className="form-group">
         <label htmlFor="email">Email:</label>
-        <input type="email" id="email" name="email" />
+        <input type="email" id="email" name="email" autoComplete="off" />
       </div>
       <div className="form-group">
-        <input type="radio" id="male" value="male" name="gender" />
-        <label htmlFor="male">Male</label>
-        <input type="radio" id="female" value="female" name="gender" />
-        <label htmlFor="female">Female</label>
+        <div className="radio-group">
+          <div className="radio-option">
+            <input type="radio" id="male" value="male" name="gender" />
+            <label htmlFor="male">Male</label>
+          </div>
+          <div className="radio-option">
+            <input type="radio" id="female" value="female" name="gender" />
+            <label htmlFor="female">Female</label>
+          </div>
+        </div>
       </div>
       <div className="form-group">
-        <label htmlFor="termsAccepted">
+        <label htmlFor="termsAccepted" className="checkbox-label">
           <input id="termsAccepted" type="checkbox" name="termsAccepted" />I
           accept Terms & Conditions
         </label>
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit" className="submit-button">
+        Submit
+      </button>
     </form>
   );
 };

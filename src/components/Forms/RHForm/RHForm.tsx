@@ -5,6 +5,7 @@ import {
 } from '../../../store/submissionsSlice';
 import { store } from '../../../store/store';
 import { useAppDispatch } from '../../../store/hooks';
+import '../Form.css';
 
 const RHForm = () => {
   const { register, handleSubmit } = useForm<SubmitedData>();
@@ -36,18 +37,29 @@ const RHForm = () => {
         <input type="email" id="email" {...register('email')} />
       </div>
       <div className="form-group">
-        <input type="radio" id="male" value="male" {...register('gender')} />
-        <label htmlFor="male">Male</label>
-        <input
-          type="radio"
-          id="female"
-          value="female"
-          {...register('gender')}
-        />
-        <label htmlFor="female">Female</label>
+        <div className="radio-group">
+          <div className="radio-option">
+            <input
+              type="radio"
+              id="male"
+              value="male"
+              {...register('gender')}
+            />
+            <label htmlFor="male">Male</label>
+          </div>
+          <div className="radio-option">
+            <input
+              type="radio"
+              id="female"
+              value="female"
+              {...register('gender')}
+            />
+            <label htmlFor="female">Female</label>
+          </div>
+        </div>
       </div>
       <div className="form-group">
-        <label htmlFor="termsAccepted">
+        <label htmlFor="termsAccepted" className="checkbox-label">
           <input
             id="termsAccepted"
             type="checkbox"
@@ -56,7 +68,9 @@ const RHForm = () => {
           I accept Terms & Conditions
         </label>
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit" className="submit-button">
+        Submit
+      </button>
     </form>
   );
 };
