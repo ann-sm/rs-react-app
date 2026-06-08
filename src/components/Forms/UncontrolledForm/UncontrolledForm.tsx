@@ -8,6 +8,10 @@ import type { FormProps, SubmitedData } from '../../../types';
 import { createFileList } from '../../../utils/createFileList';
 import '../Form.css';
 import * as yup from 'yup';
+import {
+  checkPasswordStrength,
+  type PasswordStrength,
+} from '../../../utils/passwordStrength';
 
 const UncontrolledForm = ({ onSuccess }: FormProps) => {
   const formRef = useRef<HTMLFormElement>(null);
@@ -17,6 +21,13 @@ const UncontrolledForm = ({ onSuccess }: FormProps) => {
   const schema = createFormSchema(countries);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>(
+    checkPasswordStrength('')
+  );
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswordStrength(checkPasswordStrength(event.target.value));
+  };
 
   const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
@@ -89,7 +100,24 @@ const UncontrolledForm = ({ onSuccess }: FormProps) => {
           id="password"
           name="password"
           autoComplete="off"
+          onChange={handlePasswordChange}
         />
+        <div className="password-strength">
+          <div className="strength-bars">
+            {[1, 2, 3, 4].map((level) => (
+              <div
+                key={level}
+                className={`strength-bar ${level <= passwordStrength.score ? 'active' : ''}`}
+                data-strength={passwordStrength.score}
+              />
+            ))}
+          </div>
+          <span
+            className={`strength-message strength-${passwordStrength.score}`}
+          >
+            {passwordStrength.message}
+          </span>
+        </div>
         {errors.password && (
           <span className="error-message">{errors.password}</span>
         )}

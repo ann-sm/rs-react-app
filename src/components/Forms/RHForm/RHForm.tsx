@@ -9,60 +9,59 @@ import {
 import { fileToBase64 } from '../../../utils/fileToBase64';
 import type { FormProps, SubmitedData } from '../../../types';
 import '../Form.css';
-import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useEffect, useState } from 'react';
+import {
+  checkPasswordStrength,
+  type PasswordStrength,
+} from '../../../utils/passwordStrength';
 
 const RHForm = ({ onSuccess }: FormProps) => {
   const dispatch = useAppDispatch();
   const countries = useAppSelector(selectCountries);
   const schema = createFormSchema(countries);
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>(
+    checkPasswordStrength('')
+  );
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
+    watch,
   } = useForm<FormData>({ resolver: yupResolver(schema), mode: 'onChange' });
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const watchedPassword = watch('password');
+
+  useEffect(() => {
+    setPasswordStrength(checkPasswordStrength(watchedPassword || ''));
+  }, [watchedPassword]);
 
   const onSubmit: SubmitHandler<FormData> = async (rawData) => {
     const imageFile = rawData.image[0];
 
-    try {
-      const validatedData = await schema.validate({
-        name: rawData.name,
-        age: rawData.age,
-        email: rawData.email,
-        gender: rawData.gender,
-        termsAccepted: rawData.termsAccepted,
-        password: rawData.password,
-        confirmPassword: rawData.confirmPassword,
-        country: rawData.country,
-        image: rawData.image,
-      });
-
-      const imageBase64 = await fileToBase64(imageFile);
-
-      const data: SubmitedData = {
-        ...validatedData,
-        image: imageBase64,
-      };
-
-      dispatch(addSubmission(data));
-
-      reset();
-      onSuccess();
-    } catch (error) {
-      console.log(error);
-      if (error instanceof yup.ValidationError) {
-        console.log(error.inner);
-        const validationErrors: Record<string, string> = {};
-        error.inner.map((err) => {
-          if (err.path) {
-            validationErrors[err.path] = err.message;
-          }
-        });
-      }
-    }
+    const validatedData = await schema.validate({
+      name: rawData.name,
+      age: rawData.age,
+      email: rawData.email,
+      gender: rawData.gender,
+      termsAccepted: rawData.termsAccepted,
+      password: rawData.password,
+      confirmPassword: rawData.confirmPassword,
+      country: rawData.country,
+      image: rawData.image,
+    });
+    const imageBase64 = await fileToBase64(imageFile);
+    const data: SubmitedData = {
+      ...validatedData,
+      image: imageBase64,
+    };
+    dispatch(addSubmission(data));
+    reset();
+    setPasswordStrength(checkPasswordStrength(''));
+    onSuccess();
   };
 
   return (
@@ -96,6 +95,22 @@ const RHForm = ({ onSuccess }: FormProps) => {
           autoComplete="off"
           {...register('password')}
         />
+        <div className="password-strength">
+          <div className="strength-bars">
+            {[1, 2, 3, 4].map((level) => (
+              <div
+                key={level}
+                className={`strength-bar ${level <= passwordStrength.score ? 'active' : ''}`}
+                data-strength={passwordStrength.score}
+              />
+            ))}
+          </div>
+          <span
+            className={`strength-message strength-${passwordStrength.score}`}
+          >
+            {passwordStrength.message}
+          </span>
+        </div>
         {errors.password && (
           <span className="error-message">{errors.password?.message}</span>
         )}
@@ -177,7 +192,7 @@ const RHForm = ({ onSuccess }: FormProps) => {
           <span className="error-message">{errors.termsAccepted?.message}</span>
         )}
       </div>
-      <button type="submit" className="submit-button">
+      <button type="submit" className="submit-button" disabled={!isValid}>
         Submit
       </button>
     </form>
