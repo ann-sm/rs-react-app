@@ -1,25 +1,48 @@
+import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
-import {
-  addSubmission,
-  type SubmitedData,
-} from '../../../store/submissionsSlice';
-import { store } from '../../../store/store';
-import { useAppDispatch } from '../../../store/hooks';
+import { addSubmission } from '../../../store/submissionsSlice';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { selectCountries } from '../../../store/selector';
+import { createFormSchema } from '../../../validation/formSchema';
+import { imageValidation } from '../../../validation/imageValidation';
+import { fileToBase64 } from '../../../utils/fileToBase64';
+import type { RawData, SubmitedData } from '../../../types';
 import '../Form.css';
 
 const RHForm = () => {
-  const { register, handleSubmit } = useForm<SubmitedData>();
   const dispatch = useAppDispatch();
+  const countries = useAppSelector(selectCountries);
+  const schema = createFormSchema(countries);
 
-  const onSubmit = (rawData: Omit<SubmitedData, 'submittedAt' | 'isNew'>) => {
-    const submission = {
-      ...rawData,
-      submittedAt: new Date().toISOString(),
-      isNew: true,
+  const { register, handleSubmit } = useForm<RawData>({ mode: 'onChange' });
+
+  const onSubmit = async (rawData: RawData) => {
+    const imageFile = rawData.image[0];
+    const imageBase64 =
+      imageFile && imageValidation(imageFile)
+        ? await fileToBase64(imageFile)
+        : null;
+
+    const data: SubmitedData = {
+      name: rawData.name,
+      age: rawData.age,
+      email: rawData.email,
+      gender: rawData.gender,
+      termsAccepted: rawData.termsAccepted,
+      password: rawData.password,
+      confirmPassword: rawData.confirmPassword,
+      country: rawData.country,
+      image: imageBase64,
     };
 
-    dispatch(addSubmission(submission));
-    console.log(store.getState());
+    try {
+      await schema.validate(data);
+      dispatch(addSubmission(data));
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        console.log(error.inner);
+      }
+    }
   };
 
   return (
@@ -35,6 +58,22 @@ const RHForm = () => {
       <div className="form-group">
         <label htmlFor="email">Email:</label>
         <input type="email" id="email" {...register('email')} />
+      </div>
+      <div className="form-group">
+        <label htmlFor="password">Password:</label>
+        <input type="password" id="password" {...register('password')} />
+      </div>
+      <div className="form-group">
+        <label htmlFor="confirmPassword">Confirm Password:</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          {...register('confirmPassword')}
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="image">Image:</label>
+        <input type="file" id="image" accept="image/*" {...register('image')} />
       </div>
       <div className="form-group">
         <div className="radio-group">
@@ -57,6 +96,21 @@ const RHForm = () => {
             <label htmlFor="female">Female</label>
           </div>
         </div>
+      </div>
+      <div className="form-group">
+        <label htmlFor="country">Country:</label>
+        <input
+          id="country"
+          list="countries"
+          autoComplete="off"
+          placeholder="Start typing..."
+          {...register('country')}
+        />
+        <datalist id="countries">
+          {countries.map((country) => (
+            <option key={country} value={country} />
+          ))}
+        </datalist>
       </div>
       <div className="form-group">
         <label htmlFor="termsAccepted" className="checkbox-label">

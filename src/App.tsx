@@ -5,6 +5,7 @@ import RHForm from './components/Forms/RHForm/RHForm';
 import './App.css';
 import { useAppSelector } from './store/hooks';
 import SubmissionCard from './components/SubmissionCard/SubmissionCard';
+import { selectSubmissions } from './store/selector';
 
 type ModalType = 'Uncontrolled' | 'RHF' | null;
 
@@ -12,7 +13,7 @@ const App = () => {
   const [modalType, setModalType] = useState<ModalType>(null);
   const handleClose = () => setModalType(null);
 
-  const submissions = useAppSelector((state) => state.submissions.submissions);
+  const submissions = useAppSelector(selectSubmissions);
 
   return (
     <>
@@ -29,13 +30,10 @@ const App = () => {
         </div>
       </header>
       <main>
-        <h2>Submissions:</h2>
+        <h2>Submission history:</h2>
         <div className="submission-cards">
           {submissions.map((submission) => (
-            <SubmissionCard
-              key={submission.submittedAt}
-              submission={submission}
-            />
+            <SubmissionCard key={submission.name} submission={submission} />
           ))}
         </div>
       </main>

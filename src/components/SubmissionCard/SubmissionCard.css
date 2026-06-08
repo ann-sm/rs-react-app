@@ -16,3 +16,13 @@
 .submission-card span {
   color: black;
 }
+
+.image-container img {
+  max-width: 100%;
+  margin-top: 0.5rem;
+}
+
+.image-container {
+  max-width: 20rem;
+  margin: auto;
+}

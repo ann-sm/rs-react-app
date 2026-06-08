@@ -1,17 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-
-export interface SubmitedData {
-  // id: string;
-  name: string;
-  age: number;
-  email: string;
-  gender: string;
-  termsAccepted: boolean;
-  // imageBase64: string;
-  // country: string;
-  submittedAt: string;
-  isNew: boolean;
-}
+import type { SubmitedData } from '../types';
 
 interface SubmissionsState {
   submissions: SubmitedData[];

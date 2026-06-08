@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import submissionsReducer from './submissionsSlice';
+import countriesReducer from './countriesSlice';
 
 export const store = configureStore({
   reducer: {
+    countries: countriesReducer,
     submissions: submissionsReducer,
   },
 });

@@ -1,9 +1,14 @@
-import type { SubmitedData } from '../../store/submissionsSlice';
+import type { SubmitedData } from '../../types';
 import './SubmissionCard.css';
 
 const SubmissionCard = ({ submission }: { submission: SubmitedData }) => {
   return (
     <div className="submission-card">
+      {submission.image && (
+        <div className="image-container">
+          <img src={submission.image} alt="Image" />
+        </div>
+      )}
       <h3>{submission.name}</h3>
       <p>
         Age: <span>{submission.age}</span>
@@ -15,7 +20,7 @@ const SubmissionCard = ({ submission }: { submission: SubmitedData }) => {
         Gender: <span>{submission.gender}</span>
       </p>
       <p>
-        Terms Accepted: <span>{submission.termsAccepted ? 'Yes' : 'No'}</span>
+        Country: <span>{submission.country}</span>
       </p>
     </div>
   );
