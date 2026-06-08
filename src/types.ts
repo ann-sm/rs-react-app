@@ -8,6 +8,7 @@ export interface SubmitedData {
   password: string;
   confirmPassword: string;
   country: string;
+  isNew: boolean;
 }
 
 export interface FormProps {

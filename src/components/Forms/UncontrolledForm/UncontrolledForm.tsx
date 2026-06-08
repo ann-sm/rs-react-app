@@ -57,6 +57,7 @@ const UncontrolledForm = ({ onSuccess }: FormProps) => {
       const data: SubmitedData = {
         ...validatedData,
         image: imageBase64,
+        isNew: true,
       };
 
       dispatch(addSubmission(data));
