@@ -12,6 +12,17 @@ export const createFormSchema = (countries: string[]) =>
       }),
     age: yup
       .number()
+      .transform((originalValue) => {
+        if (
+          originalValue === '' ||
+          originalValue === null ||
+          originalValue === undefined
+        ) {
+          return undefined;
+        }
+        const num = Number(originalValue);
+        return isNaN(num) ? undefined : num;
+      })
       .required('Age is required')
       .positive('Age must be a positive number')
       .integer('Age must be a whole number'),
@@ -29,10 +40,28 @@ export const createFormSchema = (countries: string[]) =>
       .required()
       .oneOf([true], 'You must accept the Terms and Conditions'),
     image: yup
-      .string()
+      .mixed<FileList>()
       .required('Image is required')
-      .test('is-base64', 'Image is required', (value) => {
-        return !!value && value.startsWith('data:image');
+      .test('file-required', 'Image is required', (value) => {
+        return value && value instanceof FileList && value.length > 0;
+      })
+      .test(
+        'file-type',
+        'Only JPEG and PNG images are allowed (max 5MB)',
+        (value) => {
+          if (!value || !(value instanceof FileList) || value.length === 0)
+            return false;
+          const file = value[0];
+          const validTypes = ['image/jpeg', 'image/png'];
+          return validTypes.includes(file.type);
+        }
+      )
+      .test('file-size', 'Image size must be less than 5MB', (value) => {
+        if (!value || !(value instanceof FileList) || value.length === 0)
+          return false;
+        const file = value[0];
+        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+        return file.size <= maxSizeInBytes;
       }),
     password: yup.string().required('Password is required'),
     confirmPassword: yup
@@ -49,4 +78,4 @@ export const createFormSchema = (countries: string[]) =>
       ),
   });
 
-export type FormSchemaType = yup.InferType<ReturnType<typeof createFormSchema>>;
+export type FormData = yup.InferType<ReturnType<typeof createFormSchema>>;

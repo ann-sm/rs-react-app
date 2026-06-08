@@ -1,15 +1,3 @@
-export interface RawData {
-  name: string;
-  age: number;
-  email: string;
-  gender: string;
-  termsAccepted: boolean;
-  image: FileList;
-  password: string;
-  confirmPassword: string;
-  country: string;
-}
-
 export interface SubmitedData {
   name: string;
   age: number;
@@ -20,4 +8,8 @@ export interface SubmitedData {
   password: string;
   confirmPassword: string;
   country: string;
+}
+
+export interface FormProps {
+  onSuccess: () => void;
 }

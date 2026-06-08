@@ -48,8 +48,10 @@ const App = () => {
             ×
           </button>
         </div>
-        {modalType === 'Uncontrolled' && <UncontrolledForm />}
-        {modalType === 'RHF' && <RHForm />}
+        {modalType === 'Uncontrolled' && (
+          <UncontrolledForm onSuccess={handleClose} />
+        )}
+        {modalType === 'RHF' && <RHForm onSuccess={handleClose} />}
       </Modal>
     </>
   );

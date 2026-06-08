@@ -80,3 +80,8 @@
   background-color: #9ca3af;
   cursor: not-allowed;
 }
+
+.error-message {
+  color: red;
+  margin-top: 0.25rem;
+}
