@@ -60,7 +60,7 @@ export const createFormSchema = (countries: string[]) =>
         if (!value || !(value instanceof FileList) || value.length === 0)
           return false;
         const file = value[0];
-        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+        const maxSizeInBytes = 5 * 1024 * 1024;
         return file.size <= maxSizeInBytes;
       }),
     password: yup.string().required('Password is required'),
