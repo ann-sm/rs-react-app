@@ -28,3 +28,5 @@ export const YearSelector = memo(({ year, years, onChange }: YearSelectorProps) 
     </div>
   );
 });
+
+YearSelector.displayName = 'YearSelector';
