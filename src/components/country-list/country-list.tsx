@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { List, type RowComponentProps } from 'react-window';
+import { List, type RowComponentProps, useDynamicRowHeight } from 'react-window';
 import type { Country } from '../../types';
 import { CountryCard } from '../country-card/country-card';
 import { getPopulationForYear, createYearDataMap } from '../../utils/data-transformers';
@@ -35,6 +35,7 @@ const Row = ({ index, style, countries, selectedYear, selectedColumns }: RowComp
 };
 
 Row.displayName = 'CountryRow';
+
 
 export const CountryList = memo(({
   countries,
@@ -101,23 +102,19 @@ export const CountryList = memo(({
     }),
     [filteredCountries, selectedYear, selectedColumns]
   );
-        
+  
+  const rowHeight = useDynamicRowHeight({ defaultRowHeight: 350 });
+
   return (
     <div className={styles.countryList}>
       <List
         rowComponent={Row}
         rowCount={filteredCountries.length}
-        rowHeight={350}
+        rowHeight={rowHeight}
         rowProps={RowData}
-        style={{
-          height: 800,
-          width: '100%',
-        }}
       />
     </div>
   );
 });
-
-
 
 CountryList.displayName = 'CountryList';
