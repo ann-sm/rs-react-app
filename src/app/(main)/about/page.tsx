@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
+import Link from "next/link";
 
-function About() {
+const About = () => {
   return (
     <main className=" flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 justify-center">
       <div className="bg-white dark:bg-cyan-900 container rounded-lg shadow-lg p-12 max-w-2xl mx-auto">
@@ -23,7 +23,7 @@ function About() {
               <li>Tailwind CSS</li>
               <li>
                 <Link
-                  to={'https://pokeapi.co/'}
+                  href={'https://pokeapi.co/'}
                   target="blank"
                   className="text-yellow-600 dark:text-yellow-500 hover:text-yellow-700 underline"
                 >
@@ -40,7 +40,7 @@ function About() {
             <p className="mb-8 dark:text-gray-300">
               This project was created by{' '}
               <Link
-                to={'https://github.com/ann-sm'}
+                href={'https://github.com/ann-sm'}
                 target="blank"
                 className="text-yellow-600 dark:text-yellow-500 hover:text-yellow-700 underline"
               >
@@ -48,7 +48,7 @@ function About() {
               </Link>{' '}
               as part of the{' '}
               <Link
-                to="https://rs.school/courses/reactjs"
+                href="https://rs.school/courses/reactjs"
                 target="blank"
                 className="text-yellow-600 dark:text-yellow-500 hover:text-yellow-700 underline"
               >
@@ -56,7 +56,7 @@ function About() {
               </Link>
             </p>
             <Link
-              to="/"
+              href="/"
               className="inline-block bg-teal-600 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md"
             >
               ← Back to Search

@@ -1,7 +1,13 @@
-import { useState } from 'react';
-import type { SearchProps } from '../../types';
+'use client'
 
-function Search({ initialValue, savedValue, onSearch }: SearchProps) {
+import { useState } from 'react';
+
+type SearchProps = {
+  initialValue: string;
+  savedValue: string;
+}
+
+const Search = ({ initialValue, savedValue }: SearchProps) => {
   const [searchValue, setSearchValue] = useState(initialValue);
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -14,9 +20,10 @@ function Search({ initialValue, savedValue, onSearch }: SearchProps) {
     if (trimmedSearch !== searchValue) {
       setSearchValue(trimmedSearch);
     }
-    if (trimmedSearch !== savedValue) {
-      onSearch(trimmedSearch);
-    }
+    console.log(savedValue);
+    // if (trimmedSearch !== savedValue) {
+    //   onSearch(trimmedSearch);
+    // }
   }
 
   return (

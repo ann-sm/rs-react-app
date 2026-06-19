@@ -1,8 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom';
+import Link from "next/link";
 
-function NotFound() {
-  const navigate = useNavigate();
-
+const NotFound = () => {
   return (
     <main className="min-h-screen bg-gray-100 dark:bg-teal-950 flex items-center justify-center">
       <div className="text-center">
@@ -19,17 +17,17 @@ function NotFound() {
 
         <div className="space-x-4">
           <Link
-            to="/"
+            href="/"
             className="inline-block bg-teal-600 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md"
           >
             Go to PokéSearch
           </Link>
-          <button
+          {/* <button
             onClick={() => navigate(-1)}
             className="inline-block bg-gray-500 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors shadow-md"
           >
             Go Back
-          </button>
+          </button> */}
         </div>
       </div>
     </main>

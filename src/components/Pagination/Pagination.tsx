@@ -1,16 +1,16 @@
-import type { PaginationProps } from '../../types';
+type PaginationProps = {
+  currentPage: number;
+  totalPages: number;
+}
 
-function Pagination({
+const Pagination = ({
   currentPage,
   totalPages,
-  onPrevPage,
-  onNextPage,
-}: PaginationProps) {
+}: PaginationProps) => {
   return (
     <nav className="mt-6">
       <button
         className="px-4 py-2 bg-teal-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 transition-colors font-mono font-bold hover:cursor-pointer"
-        onClick={() => onPrevPage(currentPage)}
         disabled={currentPage === 1}
       >
         &lt;
@@ -18,7 +18,6 @@ function Pagination({
       <span className="px-4 font-mono dark:text-gray-300">{`${currentPage} of ${totalPages}`}</span>
       <button
         className="px-4 py-2  bg-teal-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 transition-colors font-mono font-bold hover:cursor-pointer"
-        onClick={() => onNextPage(currentPage)}
         disabled={currentPage === totalPages}
       >
         &gt;

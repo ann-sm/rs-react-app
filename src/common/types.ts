@@ -49,22 +49,6 @@ export interface AppState {
   hasError: boolean;
 }
 
-export interface CardListProps {
-  pokemons: Pokemon[];
-  isLoading: boolean;
-  isFetching: boolean;
-}
-
-export interface CardProps {
-  data: Pokemon;
-}
-
-export interface SearchProps {
-  initialValue: string;
-  savedValue: string;
-  onSearch: (searchValue: string) => void;
-}
-
 export interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
@@ -73,11 +57,4 @@ export interface ErrorBoundaryProps {
 export interface ErrorBoundaryState {
   hasError: boolean;
   error?: Error;
-}
-
-export interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPrevPage: (currentPage: number) => void;
-  onNextPage: (currentPage: number) => void;
 }

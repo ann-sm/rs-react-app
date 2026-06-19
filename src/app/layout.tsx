@@ -1,20 +1,23 @@
+import { StoreProvider } from '../store/storeProvider';
 import './globals.css';
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: {
   children: React.ReactNode
-}) {
+}) => {
   return (
     <html lang="en">
       <head>
         <title>rs-react-app</title>
       </head>
       <body>
-        <div id="root" className="flex flex-col h-screen">
+        <StoreProvider>
           {children}
-        </div>
+        </StoreProvider>
       </body>
     </html>
   )
 }
+
+export default RootLayout;
