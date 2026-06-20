@@ -19,7 +19,7 @@ const Search = ({ initialValue }: SearchProps) => {
     const formData = new FormData(event.currentTarget);
     const searchValue = formData.get('search')?.toString().trim() || '';
 
-    if (!searchValue || searchValue.toLowerCase() === initialValue.toLowerCase()) {
+    if (searchValue.toLowerCase() === initialValue.toLowerCase()) {
       event.preventDefault();
     }
   }

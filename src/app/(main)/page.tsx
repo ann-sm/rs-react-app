@@ -4,6 +4,7 @@ import Pagination from "../../components/Pagination/Pagination";
 import { fetchPokemons } from "../../actions/pokemonActions";
 import { ITEMS_ON_PAGE } from "../../common/constants";
 import { redirect } from "next/navigation";
+import Details from "../../components/Details/Details";
 
 type HomeProps = {
   searchParams: Promise<{ page?: string; details?: string; search?: string}>;
@@ -58,12 +59,11 @@ const Home = async({ searchParams }: HomeProps) => {
         >
           <CardList pokemons={pokemons}/>
         </section>
-          
-          {/* {detailsId && (
-           <section className="w-1/4 mr-8">
-             <Outlet />
-           </section>
-         )} */}
+         {detailsId && (
+          <section className="w-1/4 mr-8">
+            <Details pokemonId={detailsId} />
+          </section>
+        )}
       </section> 
        {!res.error && pokemons.length > 0 && (
         <Pagination
