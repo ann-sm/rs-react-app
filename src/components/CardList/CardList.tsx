@@ -2,15 +2,15 @@ import Card from '../Card/Card';
 import type { Pokemon } from '../../common/types';
 
 type CardListProps = {
-  pokemons: Pokemon[]
-}
+  pokemons: Pokemon[];
+};
 
 const CardList = ({ pokemons }: CardListProps) => {
   // if (isLoading || isFetching) {
   //   return <Loader />;
   // }
   if (!pokemons) {
-    return
+    return;
   }
   return (
     <div className="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 py-4 px-6 h-full">
@@ -29,6 +29,6 @@ const CardList = ({ pokemons }: CardListProps) => {
       )}
     </div>
   );
-}
+};
 
 export default CardList;

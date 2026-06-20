@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { Pokemon } from '../../../common/types';
 
-const POST = async(request: Request) => {
+const POST = async (request: Request) => {
   try {
-    const { selectedPokemons }: { selectedPokemons: Pokemon[] } = await request.json();
+    const { selectedPokemons }: { selectedPokemons: Pokemon[] } =
+      await request.json();
 
     if (!selectedPokemons || selectedPokemons.length === 0) {
       return NextResponse.json({ error: 'No items selected' }, { status: 400 });
@@ -42,8 +43,11 @@ const POST = async(request: Request) => {
       },
     });
   } catch {
-    return NextResponse.json({ error: 'Failed to compile server CSV' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to compile server CSV' },
+      { status: 500 }
+    );
   }
-}
+};
 
 export { POST };

@@ -8,7 +8,7 @@ import { togglePokemon } from '../../store/selectedPokemonsSlice';
 
 type CardProps = {
   data: Pokemon;
-}
+};
 
 const Card = ({ data }: CardProps) => {
   const { id, name, height, weight, image, abilities } = data;
@@ -24,8 +24,8 @@ const Card = ({ data }: CardProps) => {
     }
     if (page) {
       params.set('page', page);
-    } 
-    
+    }
+
     params.set('details', id.toString());
     return `/?${params.toString()}`;
   };
@@ -78,6 +78,6 @@ const Card = ({ data }: CardProps) => {
       </article>
     </Link>
   );
-}
+};
 
 export default Card;

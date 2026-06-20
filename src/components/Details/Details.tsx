@@ -6,16 +6,16 @@ import { getPokemonDetails } from '../../actions/pokemonActions';
 
 type DetailsProps = {
   pokemonId: string;
-}
+};
 
-const Details = async({ pokemonId }: DetailsProps) => {
+const Details = async ({ pokemonId }: DetailsProps) => {
   const pokemon = await getPokemonDetails(pokemonId);
 
   if (!pokemon) {
     return (
       <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
         <CloseButton />
-        <p className='text-gray-500 font-mono mt-10'>{`Pokemon with ID ${pokemonId} not found`}</p>
+        <p className="text-gray-500 font-mono mt-10">{`Pokemon with ID ${pokemonId} not found`}</p>
       </div>
     );
   }
@@ -56,8 +56,8 @@ const Details = async({ pokemonId }: DetailsProps) => {
       <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-2">
         weight: {pokemon.weight || 'n/a'}
       </p>
-   </div>
+    </div>
   );
-}
+};
 
 export default Details;

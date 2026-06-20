@@ -50,6 +50,6 @@ const Audio = ({ cry }: { cry: string }) => {
       </button>
     </div>
   );
-}
+};
 
 export default Audio;

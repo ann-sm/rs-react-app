@@ -23,7 +23,7 @@ const CloseButton = () => {
   return (
     <button
       onClick={closeModal}
-      className='absolute top-4 right-6 text-2xl text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:cursor-pointer'
+      className="absolute top-4 right-6 text-2xl text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:cursor-pointer"
     >
       ×
     </button>

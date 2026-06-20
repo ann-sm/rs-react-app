@@ -9,7 +9,7 @@ const Flyout = () => {
     (state) => state.selectedPokemons.selectedPokemons
   );
 
-  const handleDownload = async() => {
+  const handleDownload = async () => {
     try {
       const response = await fetch('/api/export-csv', {
         method: 'POST',
@@ -21,7 +21,7 @@ const Flyout = () => {
 
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-      
+
       const link = document.createElement('a');
       link.href = url;
       link.download = `${selectedPokemons.length}_items.csv`;
@@ -58,6 +58,6 @@ const Flyout = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Flyout;

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 const About = () => {
   return (
@@ -66,6 +66,6 @@ const About = () => {
       </div>
     </main>
   );
-}
+};
 
 export default About;

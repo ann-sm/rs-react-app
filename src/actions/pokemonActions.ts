@@ -4,10 +4,10 @@ import type { Pokemon, PokemonData, PokemonResponse } from '../common/types';
 import { BASE_URL, ITEMS_ON_PAGE, POKEMONS_TOTAL } from '../common/constants';
 import { redirect } from 'next/navigation';
 
-export type PokemonActionState = { 
+export type PokemonActionState = {
   pokemons: Pokemon[];
   pokemonsTotal: number;
-}
+};
 
 const transformPokemonData = (data: PokemonData): Pokemon => {
   return {
@@ -20,9 +20,9 @@ const transformPokemonData = (data: PokemonData): Pokemon => {
     types: data.types.map((item) => item.type.name),
     cry: data.cries.latest,
   };
-}
+};
 
-export const fetchPokemons = async(searchValue: string, page: number) => { 
+export const fetchPokemons = async (searchValue: string, page: number) => {
   const limit = ITEMS_ON_PAGE;
   const offset = (page - 1) * limit;
 
@@ -31,43 +31,50 @@ export const fetchPokemons = async(searchValue: string, page: number) => {
     let pokemonsTotal = 0;
 
     if (!searchValue) {
-      const response = await fetch(`${BASE_URL}?limit=${limit}&offset=${offset}`);
+      const response = await fetch(
+        `${BASE_URL}?limit=${limit}&offset=${offset}`
+      );
       if (!response.ok) throw new Error('Failed to fetch pokemons');
-      const data: {results: PokemonResponse[], count: number} = await response.json();
-      
+      const data: { results: PokemonResponse[]; count: number } =
+        await response.json();
+
       const items = await Promise.all(
         data.results.map(async (item) => {
           const pokemonId = item.url.split('/').filter(Boolean).pop();
           const detailResponse = await fetch(`${BASE_URL}/${pokemonId}`);
-          if (!detailResponse.ok) throw new Error('Failed to fetch pokemon details');
+          if (!detailResponse.ok)
+            throw new Error('Failed to fetch pokemon details');
 
           return transformPokemonData(await detailResponse.json());
         })
       );
-      
+
       pokemons = items;
       pokemonsTotal = data.count;
-    } 
-    else {
+    } else {
       // Search by name
-      const response = await fetch(`${BASE_URL}?limit=${POKEMONS_TOTAL}&offset=0`);
+      const response = await fetch(
+        `${BASE_URL}?limit=${POKEMONS_TOTAL}&offset=0`
+      );
       if (!response.ok) throw new Error('Failed to fetch pokemons');
-      const data: {results: PokemonResponse[], count: number} = await response.json();
-      
+      const data: { results: PokemonResponse[]; count: number } =
+        await response.json();
+
       const filteredData = data.results.filter((item) =>
         item.name.toLowerCase().includes(searchValue.toLowerCase())
       );
       const paginatedData = filteredData.slice(offset, offset + limit);
-    
+
       const items = await Promise.all(
         paginatedData.map(async (item) => {
           const pokemonId = item.url.split('/').filter(Boolean).pop();
           const detailResponse = await fetch(`${BASE_URL}/${pokemonId}`);
-          if (!detailResponse.ok) throw new Error('Failed to fetch pokemon details');
+          if (!detailResponse.ok)
+            throw new Error('Failed to fetch pokemon details');
 
           return transformPokemonData(await detailResponse.json());
         })
-      ); 
+      );
       pokemons = items;
       pokemonsTotal = filteredData.length;
     }
@@ -75,25 +82,28 @@ export const fetchPokemons = async(searchValue: string, page: number) => {
   } catch {
     return { error: 'Failed to search pokemon' };
   }
-}
+};
 
-export const getPokemonDetails = async(id: string) => {
+export const getPokemonDetails = async (id: string) => {
   try {
     const response = await fetch(`${BASE_URL}/${id}`);
     if (!response.ok) throw new Error('Failed to fetch details');
     const data = await response.json();
-    
+
     return transformPokemonData(data);
   } catch {
     return null;
   }
-}
+};
 
-export const searchPokemons = async(_prevState: PokemonActionState, formData: FormData) => {
+export const searchPokemons = async (
+  _prevState: PokemonActionState,
+  formData: FormData
+) => {
   const searchValue = formData.get('search')?.toString().trim() || '';
-    if (searchValue) {
-      redirect(`/?search=${encodeURIComponent(searchValue)}&page=1`);
-    } else {
-      redirect('/?page=1');
-    }
-}
+  if (searchValue) {
+    redirect(`/?search=${encodeURIComponent(searchValue)}&page=1`);
+  } else {
+    redirect('/?page=1');
+  }
+};

@@ -1,23 +1,17 @@
 import { StoreProvider } from '../store/storeProvider';
 import './globals.css';
 
-const RootLayout = ({
-  children,
-}: {
-  children: React.ReactNode
-}) => {
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
       <head>
         <title>rs-react-app</title>
       </head>
       <body>
-        <StoreProvider>
-          {children}
-        </StoreProvider>
+        <StoreProvider>{children}</StoreProvider>
       </body>
     </html>
-  )
-}
+  );
+};
 
 export default RootLayout;

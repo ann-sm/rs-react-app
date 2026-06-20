@@ -1,19 +1,25 @@
-'use client'
+'use client';
 
 import { SubmitEventHandler, useActionState } from 'react';
-import { PokemonActionState, searchPokemons } from '../../actions/pokemonActions';
+import {
+  PokemonActionState,
+  searchPokemons,
+} from '../../actions/pokemonActions';
 
 type SearchProps = {
   initialValue: string;
-}
+};
 
 const initialState: PokemonActionState = {
   pokemons: [],
-  pokemonsTotal: 0
-}
+  pokemonsTotal: 0,
+};
 
 const Search = ({ initialValue }: SearchProps) => {
-  const [, formAction, isPending] = useActionState(searchPokemons, initialState);
+  const [, formAction, isPending] = useActionState(
+    searchPokemons,
+    initialState
+  );
 
   const handleInputSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
     const formData = new FormData(event.currentTarget);
@@ -22,7 +28,7 @@ const Search = ({ initialValue }: SearchProps) => {
     if (searchValue.toLowerCase() === initialValue.toLowerCase()) {
       event.preventDefault();
     }
-  }
+  };
 
   return (
     <form
@@ -46,6 +52,6 @@ const Search = ({ initialValue }: SearchProps) => {
       </button>
     </form>
   );
-}
+};
 
 export default Search;
