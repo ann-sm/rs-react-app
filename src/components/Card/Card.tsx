@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import type { Pokemon } from '../../common/types';
 import { useSearchParams } from 'next/navigation';
-// import { useAppDispatch, useAppSelector } from '../../store/hooks';
-// import { togglePokemon } from '../../store/selectedPokemonsSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { togglePokemon } from '../../store/selectedPokemonsSlice';
 
 type CardProps = {
   data: Pokemon;
@@ -30,10 +30,10 @@ const Card = ({ data }: CardProps) => {
     return `/?${params.toString()}`;
   };
 
-  // const dispatch = useAppDispatch();
-  // const selectedPokemons = useAppSelector(
-  //   (state) => state.selectedPokemons.selectedPokemons
-  // );
+  const dispatch = useAppDispatch();
+  const selectedPokemons = useAppSelector(
+    (state) => state.selectedPokemons.selectedPokemons
+  );
 
   return (
     <Link href={getDetailsUrl()} className="block h-full min-w-0">
@@ -70,9 +70,9 @@ const Card = ({ data }: CardProps) => {
         <input
           type="checkbox"
           id={`pokemon-${id}`}
-          // checked={selectedPokemons.some((pokemon) => pokemon.id === id)}
-          // onChange={() => dispatch(togglePokemon(data))}
-          // onClick={(e) => e.stopPropagation()}
+          checked={selectedPokemons.some((pokemon) => pokemon.id === id)}
+          onChange={() => dispatch(togglePokemon(data))}
+          onClick={(e) => e.stopPropagation()}
           className="absolute top-2 right-2 w-5 h-5 accent-yellow-500 hover:cursor-pointer"
         />
       </article>

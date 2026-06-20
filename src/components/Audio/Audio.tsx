@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-function Audio({ cry }: { cry: string }) {
+const Audio = ({ cry }: { cry: string }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 

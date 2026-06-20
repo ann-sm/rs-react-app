@@ -5,6 +5,7 @@ import { fetchPokemons } from "../../actions/pokemonActions";
 import { ITEMS_ON_PAGE } from "../../common/constants";
 import { redirect } from "next/navigation";
 import Details from "../../components/Details/Details";
+import Flyout from "../../components/Flyout/Flyout";
 
 type HomeProps = {
   searchParams: Promise<{ page?: string; details?: string; search?: string}>;
@@ -40,10 +41,6 @@ const Home = async({ searchParams }: HomeProps) => {
   const pokemons = res.pokemons ?? [];
   const totalPages = Math.ceil((res.pokemonsTotal ?? 0) / ITEMS_ON_PAGE);
 
-  //  const selectedPokemons = useAppSelector(
-  //   (state) => state.selectedPokemons.selectedPokemons
-  // );
-
   return (
     <main className="flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 text-center">
        <Search
@@ -71,15 +68,15 @@ const Home = async({ searchParams }: HomeProps) => {
           totalPages={totalPages}
         />
       )}
-       {/* <button
-//          className="bg-yellow-500 text-white font-mono m-auto w-fit text-lg px-6 py-3 my-12 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
-//          onClick={() => {
-//            setHasError(true);
-//          }}
-//        >
-//          Error Button
-//        </button>
-//        {selectedPokemons.length > 0 && <Flyout />} */}
+      {/* <button
+          className="bg-yellow-500 text-white font-mono m-auto w-fit text-lg px-6 py-3 my-12 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
+          onClick={() => {
+            setHasError(true);
+          }}
+        >
+          Error Button
+        </button>  */}
+        <Flyout />
     </main>
   );
 }
