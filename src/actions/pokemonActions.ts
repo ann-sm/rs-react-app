@@ -1,7 +1,13 @@
 'use server';
 
-import type { Pokemon, PokemonData, PokemonResponse } from '../../common/types';
-import { BASE_URL, ITEMS_ON_PAGE, POKEMONS_TOTAL } from '../../common/constants';
+import type { Pokemon, PokemonData, PokemonResponse } from '../common/types';
+import { BASE_URL, ITEMS_ON_PAGE, POKEMONS_TOTAL } from '../common/constants';
+import { redirect } from 'next/navigation';
+
+export type PokemonActionState = { 
+  pokemons: Pokemon[];
+  pokemonsTotal: number;
+}
 
 const transformPokemonData = (data: PokemonData): Pokemon => {
   return {
@@ -52,7 +58,7 @@ export const fetchPokemons = async(searchValue: string, page: number) => {
         item.name.toLowerCase().includes(searchValue.toLowerCase())
       );
       const paginatedData = filteredData.slice(offset, offset + limit);
-      
+    
       const items = await Promise.all(
         paginatedData.map(async (item) => {
           const pokemonId = item.url.split('/').filter(Boolean).pop();
@@ -61,12 +67,10 @@ export const fetchPokemons = async(searchValue: string, page: number) => {
 
           return transformPokemonData(await detailResponse.json());
         })
-      );
-      
+      ); 
       pokemons = items;
       pokemonsTotal = filteredData.length;
     }
-
     return { pokemons, pokemonsTotal };
   } catch {
     return { error: 'Failed to search pokemon' };
@@ -83,4 +87,13 @@ export const getPokemonDetails = async(id: string) => {
   } catch {
     return null;
   }
+}
+
+export const searchPokemons = async(_prevState: PokemonActionState, formData: FormData) => {
+  const searchValue = formData.get('search')?.toString().trim() || '';
+    if (searchValue) {
+      redirect(`/?search=${encodeURIComponent(searchValue)}&page=1`);
+    } else {
+      redirect('/?page=1');
+    }
 }

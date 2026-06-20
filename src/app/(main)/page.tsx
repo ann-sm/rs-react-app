@@ -1,21 +1,32 @@
 import Search from "../../components/Search/Search";
 import CardList from "../../components/CardList/CardList";
 import Pagination from "../../components/Pagination/Pagination";
-import { fetchPokemons } from "../actions/pokemonActions";
+import { fetchPokemons } from "../../actions/pokemonActions";
 import { ITEMS_ON_PAGE } from "../../common/constants";
+import { redirect } from "next/navigation";
 
 type HomeProps = {
-  searchParams: Promise<{ page?: string; details?: string }>;
+  searchParams: Promise<{ page?: string; details?: string; search?: string}>;
 };
 
 const Home = async({ searchParams }: HomeProps) => {
   const params = await searchParams;
-
-  const page = Number(params.page) || 1;
+  const search = params.search || '';
   const detailsId = params.details;
-  // const isLoading = false;
 
-  const res = await fetchPokemons('', page);
+   if (!params.page) {
+    const searchParams = new URLSearchParams();
+    if (search) {
+      searchParams.set('search', search);
+    }
+    
+    searchParams.set('page', '1');
+    redirect(`/?${searchParams.toString()}`);
+  }
+
+  const page = Number(params.page);
+
+  const res = await fetchPokemons(search, page);
 
   if (res.error) {
     // return (
@@ -23,7 +34,7 @@ const Home = async({ searchParams }: HomeProps) => {
     //     <ErrorComponent error={res.error} onRetry={() => refetch()} />
     //   </main>
     // );
-    throw new Error('Failed to fetch');
+    throw new Error(res.error);
   }
   const pokemons = res.pokemons ?? [];
   const totalPages = Math.ceil((res.pokemonsTotal ?? 0) / ITEMS_ON_PAGE);
@@ -35,8 +46,7 @@ const Home = async({ searchParams }: HomeProps) => {
   return (
     <main className="flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 text-center">
        <Search
-        initialValue={''}
-        savedValue={''}
+        initialValue={search}
       />
       <section className="flex flex-1">
         <section

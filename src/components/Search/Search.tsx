@@ -1,52 +1,48 @@
 'use client'
 
-import { useState } from 'react';
+import { SubmitEventHandler, useActionState } from 'react';
+import { PokemonActionState, searchPokemons } from '../../actions/pokemonActions';
 
 type SearchProps = {
   initialValue: string;
-  savedValue: string;
 }
 
-const Search = ({ initialValue, savedValue }: SearchProps) => {
-  const [searchValue, setSearchValue] = useState(initialValue);
+const initialState: PokemonActionState = {
+  pokemons: [],
+  pokemonsTotal: 0
+}
 
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setSearchValue(event.target.value);
-  }
+const Search = ({ initialValue }: SearchProps) => {
+  const [, formAction, isPending] = useActionState(searchPokemons, initialState);
 
-  function handleInputSubmit() {
-    const trimmedSearch = searchValue.trim();
+  const handleInputSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    const formData = new FormData(event.currentTarget);
+    const searchValue = formData.get('search')?.toString().trim() || '';
 
-    if (trimmedSearch !== searchValue) {
-      setSearchValue(trimmedSearch);
+    if (!searchValue || searchValue.toLowerCase() === initialValue.toLowerCase()) {
+      event.preventDefault();
     }
-    console.log(savedValue);
-    // if (trimmedSearch !== savedValue) {
-    //   onSearch(trimmedSearch);
-    // }
   }
 
   return (
     <form
-      onSubmit={(event: React.SubmitEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        handleInputSubmit();
-      }}
+      action={formAction}
+      onSubmit={handleInputSubmit}
       className="max-w-2xl min-w-sm mx-auto flex mt-4"
     >
       <input
         type="search"
         name="search"
-        value={searchValue}
-        onChange={handleInputChange}
+        defaultValue={initialValue}
         placeholder="Enter a pokemon name..."
         className="flex-1 px-4 py-3 rounded-bl-lg font-mono rounded-tl-lg bg-white dark:bg-teal-950 border-2 border-transparent dark:border-teal-900 focus:border-yellow-400 focus:outline-none text-gray-800 dark:text-gray-300 placeholder-gray-400"
       ></input>
       <button
         type="submit"
+        disabled={isPending}
         className="bg-yellow-500 text-white font-mono text-lg px-6 py-3 rounded-br-lg rounded-tr-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
       >
-        Search
+        {isPending ? '...' : 'Search'}
       </button>
     </form>
   );
