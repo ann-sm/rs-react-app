@@ -1,6 +1,6 @@
 'use client';
 
-import { redirect, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type PaginationProps = {
   currentPage: number;
@@ -8,15 +8,19 @@ type PaginationProps = {
 };
 
 const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
+  const router = useRouter();
+
   const searchParams = useSearchParams();
   const searchValue = searchParams?.get('search') || '';
 
   const handleNavigation = (page: number) => {
-    if (searchValue) {
-      redirect(`/?search=${encodeURIComponent(searchValue)}&page=${page}`);
-    } else {
-      redirect(`/?page=${page}`);
-    }
+      if (searchValue) {
+        // redirect(`/?search=${encodeURIComponent(searchValue)}&page=${page}`);
+        router.push(`/?search=${encodeURIComponent(searchValue)}&page=${page}`);
+      } else {
+        // redirect(`/?page=${page}`);
+        router.push(`/?page=${page}`);
+      }
   };
 
   return (

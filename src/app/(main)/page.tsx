@@ -6,6 +6,8 @@ import { ITEMS_ON_PAGE } from '../../common/constants';
 import { redirect } from 'next/navigation';
 import Details from '../../components/Details/Details';
 import Flyout from '../../components/Flyout/Flyout';
+import { Suspense } from 'react';
+import Loader from './loading';
 
 type HomeProps = {
   searchParams: Promise<{ page?: string; details?: string; search?: string }>;
@@ -56,7 +58,9 @@ const Home = async ({ searchParams }: HomeProps) => {
         </section>
         {detailsId && (
           <section className="w-1/4 mr-8">
-            <Details pokemonId={detailsId} />
+            <Suspense fallback={<Loader />}>
+              <Details pokemonId={detailsId} />
+            </Suspense>
           </section>
         )}
       </section>

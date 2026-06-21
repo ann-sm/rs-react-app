@@ -1,4 +1,4 @@
-function Loader() {
+const Loader = () => {
   return (
     <div className="flex items-center justify-center min-h-[58vh] w-full">
       <div
