@@ -1,3 +1,4 @@
+import { ThemeProvider } from '../contexts/theme/ThemeProvider';
 import { StoreProvider } from '../store/storeProvider';
 import './globals.css';
 
@@ -8,7 +9,11 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         <title>rs-react-app</title>
       </head>
       <body>
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </StoreProvider>
       </body>
     </html>
   );

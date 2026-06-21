@@ -1,10 +1,10 @@
+'use client';
+
 import { useEffect, useState, type ReactNode } from 'react';
 import { ThemeContext, type Theme } from './ThemeContext';
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(
-    (localStorage.getItem('ann-sm-theme') as Theme) || 'light'
-  );
+  const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
     localStorage.setItem('ann-sm-theme', theme);
