@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Pokemon } from '../../common/types';
 import { useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -8,9 +9,10 @@ import { togglePokemon } from '../../store/selectedPokemonsSlice';
 
 type CardProps = {
   data: Pokemon;
+  index: number;
 };
 
-const Card = ({ data }: CardProps) => {
+const Card = ({ data, index }: CardProps) => {
   const { id, name, height, weight, image, abilities } = data;
   const searchParams = useSearchParams();
   const page = searchParams?.get('page');
@@ -40,11 +42,14 @@ const Card = ({ data }: CardProps) => {
       <article className="relative flex flex-col bg-white dark:bg-cyan-900 rounded-lg shadow-md h-full w-full min-w-0 overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer text-left">
         <div className="relative pb-[100%] bg-linear-to-br from-teal-50 to-blue-50 dark:from-slate-500 dark:to-mist-500">
           {image ? (
-            <img
+            <Image
               src={image}
               alt={`${name} image`}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={index < 4}
               className="absolute inset-0 w-full h-full object-contain p-4"
-            ></img>
+            ></Image>
           ) : (
             <div className="absolute flex w-full h-full items-center justify-center">
               <p className="text-lg font-mono text-gray-500">

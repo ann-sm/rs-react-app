@@ -22,8 +22,8 @@ const CardList = ({ pokemons }: CardListProps) => {
         </div>
       ) : (
         <>
-          {pokemons.map((item) => {
-            return <Card key={item.id} data={item} />;
+          {pokemons.map((item, index) => {
+            return <Card key={item.id} data={item} index={index} />;
           })}
         </>
       )}

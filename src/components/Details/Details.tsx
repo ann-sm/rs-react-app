@@ -3,6 +3,7 @@
 import Audio from '../Audio/Audio';
 import CloseButton from '../CloseButton/CloseButton';
 import { getPokemonDetails } from '../../actions/pokemonActions';
+import Image from 'next/image';
 
 type DetailsProps = {
   pokemonId: string;
@@ -24,11 +25,13 @@ const Details = async ({ pokemonId }: DetailsProps) => {
     <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
       <div className="relative pb-[100%] bg-linear-to-br from-teal-50 to-blue-50 dark:from-slate-500 dark:to-mist-500 mb-4">
         {pokemon.image ? (
-          <img
+          <Image
             src={pokemon.image}
             alt={`${pokemon.name} image`}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
             className=" absolute w-full h-full object-contain p-4"
-          ></img>
+          ></Image>
         ) : (
           <div className="absolute flex h-full w-full items-center justify-center">
             <p className="text-lg font-mono text-gray-500">
