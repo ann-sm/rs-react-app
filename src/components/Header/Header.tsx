@@ -2,9 +2,13 @@
 
 import Link from 'next/link';
 import { useTheme } from '../../contexts/theme/useTheme';
+import { useLocale, useTranslations } from 'next-intl';
+import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 // import { useAppDispatch } from '../../store/hooks';
 
 const Header = () => {
+  const t = useTranslations('header');
+  const locale = useLocale();
   const { theme, toggleTheme } = useTheme();
   // const dispatch = useAppDispatch();
 
@@ -12,9 +16,9 @@ const Header = () => {
     <header className="bg-teal-700 shadow-lg">
       <div className="container mx-auto px-4 py-6 text-center">
         <div className="flex justify-end gap-6">
+          <LanguageSwitcher />
           <Link
-            href={'about'}
-            aria-label="About"
+            href={`${locale}/about`}
             className="inline-flex items-center gap-2 text-gray-100 dark:text-teal-950 hover:text-yellow-400 transition-colors duration-200 hover:cursor-pointer group"
           >
             <svg
@@ -68,11 +72,11 @@ const Header = () => {
             // }
             className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:cursor-pointer hover:bg-teal-800 transition-colors duration-200 font-mono"
           >
-            Refresh
+            {t('refresh')}
           </button>
         </div>
         <h1 className="inline-block text-4xl font-logo font-black text-yellow-400 uppercase text-center mb-4 tracking-wider [text-shadow:2px_2px_0_rgb(185_28_28)] transition-all duration-300 hover:scale-102">
-          <Link href={'/'}>PokéSearch</Link>
+          <Link href={`/${locale}`}>PokéSearch</Link>
         </h1>
       </div>
     </header>

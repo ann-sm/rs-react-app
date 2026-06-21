@@ -1,34 +1,36 @@
-import Search from '../../components/Search/Search';
-import CardList from '../../components/CardList/CardList';
-import Pagination from '../../components/Pagination/Pagination';
-import { fetchPokemons } from '../../actions/pokemonActions';
-import { ITEMS_ON_PAGE } from '../../common/constants';
+import Search from '../../../components/Search/Search';
+import CardList from '../../../components/CardList/CardList';
+import Pagination from '../../../components/Pagination/Pagination';
+import { fetchPokemons } from '../../../actions/pokemonActions';
+import { ITEMS_ON_PAGE } from '../../../common/constants';
 import { redirect } from 'next/navigation';
-import Details from '../../components/Details/Details';
-import Flyout from '../../components/Flyout/Flyout';
+import Details from '../../../components/Details/Details';
+import Flyout from '../../../components/Flyout/Flyout';
 import { Suspense } from 'react';
 import Loader from './loading';
 
 type HomeProps = {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ page?: string; details?: string; search?: string }>;
 };
 
-const Home = async ({ searchParams }: HomeProps) => {
-  const params = await searchParams;
-  const search = params.search || '';
-  const detailsId = params.details;
+const Home = async ({ params, searchParams }: HomeProps) => {
+  const { locale } = await params; 
+  const searchParameters = await searchParams;
+  const search = searchParameters.search || '';
+  const detailsId = searchParameters.details;
 
-  if (!params.page) {
+  if (!searchParameters.page) {
     const searchParams = new URLSearchParams();
     if (search) {
       searchParams.set('search', search);
     }
 
     searchParams.set('page', '1');
-    redirect(`/?${searchParams.toString()}`);
+    redirect(`/${locale}?${searchParams.toString()}`);
   }
 
-  const page = Number(params.page);
+  const page = Number(searchParameters.page);
 
   const res = await fetchPokemons(search, page);
 

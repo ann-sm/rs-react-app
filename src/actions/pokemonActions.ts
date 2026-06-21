@@ -98,12 +98,13 @@ export const getPokemonDetails = async (id: string) => {
 
 export const searchPokemons = async (
   _prevState: PokemonActionState,
-  formData: FormData
+  formData: FormData,
+  locale: string
 ) => {
   const searchValue = formData.get('search')?.toString().trim() || '';
   if (searchValue) {
-    redirect(`/?search=${encodeURIComponent(searchValue)}&page=1`);
+    redirect(`/${locale}?search=${encodeURIComponent(searchValue)}&page=1`);
   } else {
-    redirect('/?page=1');
+    redirect(`/${locale}?page=1`);
   }
 };

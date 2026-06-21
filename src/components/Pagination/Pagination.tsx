@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 type PaginationProps = {
@@ -8,6 +9,8 @@ type PaginationProps = {
 };
 
 const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
+  const t = useTranslations('pagination');
+  const locale = useLocale();
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -15,11 +18,9 @@ const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
 
   const handleNavigation = (page: number) => {
       if (searchValue) {
-        // redirect(`/?search=${encodeURIComponent(searchValue)}&page=${page}`);
-        router.push(`/?search=${encodeURIComponent(searchValue)}&page=${page}`);
+        router.push(`/${locale}?search=${encodeURIComponent(searchValue)}&page=${page}`);
       } else {
-        // redirect(`/?page=${page}`);
-        router.push(`/?page=${page}`);
+        router.push(`/${locale}?page=${page}`);
       }
   };
 
@@ -32,7 +33,7 @@ const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
       >
         &lt;
       </button>
-      <span className="px-4 font-mono dark:text-gray-300">{`${currentPage} of ${totalPages}`}</span>
+      <span className="px-4 font-mono dark:text-gray-300">{`${currentPage} ${t('of')} ${totalPages}`}</span>
       <button
         onClick={() => handleNavigation(currentPage + 1)}
         className="px-4 py-2  bg-teal-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 transition-colors font-mono font-bold hover:cursor-pointer"

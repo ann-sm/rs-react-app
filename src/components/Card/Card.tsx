@@ -6,6 +6,7 @@ import type { Pokemon } from '../../common/types';
 import { useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { togglePokemon } from '../../store/selectedPokemonsSlice';
+import { useLocale } from 'next-intl';
 
 type CardProps = {
   data: Pokemon;
@@ -15,6 +16,8 @@ type CardProps = {
 const Card = ({ data, index }: CardProps) => {
   const { id, name, height, weight, image, abilities } = data;
   const searchParams = useSearchParams();
+  const locale = useLocale();
+
   const page = searchParams?.get('page');
   const search = searchParams?.get('search') || '';
 
@@ -29,7 +32,7 @@ const Card = ({ data, index }: CardProps) => {
     }
 
     params.set('details', id.toString());
-    return `/?${params.toString()}`;
+    return `/${locale}?${params.toString()}`;
   };
 
   const dispatch = useAppDispatch();

@@ -1,11 +1,13 @@
 import Card from '../Card/Card';
 import type { Pokemon } from '../../common/types';
+import { useTranslations } from 'next-intl';
 
 type CardListProps = {
   pokemons: Pokemon[];
 };
 
 const CardList = ({ pokemons }: CardListProps) => {
+  const t = useTranslations('cardlist');
   // if (isLoading || isFetching) {
   //   return <Loader />;
   // }
@@ -17,7 +19,7 @@ const CardList = ({ pokemons }: CardListProps) => {
       {pokemons.length === 0 ? (
         <div className="col-span-full flex justify-center items-center">
           <p className="text-gray-500 dark:text-gray-300 text-xl font-mono">
-            No pokemons found. Try something different!
+            {t('noResults')}
           </p>
         </div>
       ) : (

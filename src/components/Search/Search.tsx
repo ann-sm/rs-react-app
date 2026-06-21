@@ -5,6 +5,7 @@ import {
   PokemonActionState,
   searchPokemons,
 } from '../../actions/pokemonActions';
+import { useLocale, useTranslations } from 'next-intl';
 
 type SearchProps = {
   initialValue: string;
@@ -16,8 +17,12 @@ const initialState: PokemonActionState = {
 };
 
 const Search = ({ initialValue }: SearchProps) => {
+  const t = useTranslations('search');
+  const locale = useLocale();
+  
   const [, formAction, isPending] = useActionState(
-    searchPokemons,
+    (state: PokemonActionState, formData: FormData) => 
+      searchPokemons(state, formData, locale),
     initialState
   );
 
@@ -40,7 +45,7 @@ const Search = ({ initialValue }: SearchProps) => {
         type="search"
         name="search"
         defaultValue={initialValue}
-        placeholder="Enter a pokemon name..."
+        placeholder={t('placeholder')}
         className="flex-1 px-4 py-3 rounded-bl-lg font-mono rounded-tl-lg bg-white dark:bg-teal-950 border-2 border-transparent dark:border-teal-900 focus:border-yellow-400 focus:outline-none text-gray-800 dark:text-gray-300 placeholder-gray-400"
       ></input>
       <button
@@ -48,7 +53,7 @@ const Search = ({ initialValue }: SearchProps) => {
         disabled={isPending}
         className="bg-yellow-500 text-white font-mono text-lg px-6 py-3 rounded-br-lg rounded-tr-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
       >
-        {isPending ? '...' : 'Search'}
+        {isPending ? '...' : t('button')}
       </button>
     </form>
   );

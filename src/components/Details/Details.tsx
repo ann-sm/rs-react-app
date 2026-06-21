@@ -4,19 +4,21 @@ import Audio from '../Audio/Audio';
 import CloseButton from '../CloseButton/CloseButton';
 import { getPokemonDetails } from '../../actions/pokemonActions';
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 
 type DetailsProps = {
   pokemonId: string;
 };
 
 const Details = async ({ pokemonId }: DetailsProps) => {
+  const t = await getTranslations('details');
   const pokemon = await getPokemonDetails(pokemonId);
 
   if (!pokemon) {
     return (
       <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
         <CloseButton />
-        <p className="text-gray-500 font-mono mt-10">{`Pokemon with ID ${pokemonId} not found`}</p>
+        <p className="text-gray-500 font-mono mt-10">{`${t('notFound')} ${pokemonId}`}</p>
       </div>
     );
   }
@@ -35,7 +37,7 @@ const Details = async ({ pokemonId }: DetailsProps) => {
         ) : (
           <div className="absolute flex h-full w-full items-center justify-center">
             <p className="text-lg font-mono text-gray-500">
-              No image available
+              {t('noImage')}
             </p>
           </div>
         )}
@@ -48,16 +50,16 @@ const Details = async ({ pokemonId }: DetailsProps) => {
         {pokemon.cry && <Audio cry={pokemon.cry} />}
       </div>
       <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-1">
-        types: {pokemon.types.join(', ') || 'n/a'}
+        {t('types')}: {pokemon.types.join(', ') || 'n/a'}
       </p>
       <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-1">
-        abilities: {pokemon.abilities.join(', ') || 'n/a'}
+       {t('abilities')}: {pokemon.abilities.join(', ') || 'n/a'}
       </p>
       <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-1">
-        height: {pokemon.height || 'n/a'}
+        {t('height')}: {pokemon.height || 'n/a'}
       </p>
       <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-2">
-        weight: {pokemon.weight || 'n/a'}
+        {t('weight')}: {pokemon.weight || 'n/a'}
       </p>
     </div>
   );

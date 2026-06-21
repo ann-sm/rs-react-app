@@ -1,10 +1,13 @@
 'use client';
 
+import { useLocale } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const CloseButton = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const locale = useLocale();
+
   const page = searchParams?.get('page') || '1';
   const search = searchParams?.get('search') || '';
 
@@ -17,7 +20,7 @@ const CloseButton = () => {
     if (page) {
       params.set('page', page);
     }
-    router.push(`/?${params.toString()}`);
+    router.push(`/${locale}?${params.toString()}`);
   };
 
   return (
