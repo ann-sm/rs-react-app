@@ -34,11 +34,6 @@ const Home = async ({ searchParams }: HomeProps) => {
   const res = await fetchPokemons(search, page);
 
   if (res.error) {
-    // return (
-    //   <main className="flex items-center justify-center h-screen p-4 bg-gray-100 dark:bg-teal-950">
-    //     <ErrorComponent error={res.error} onRetry={() => refetch()} />
-    //   </main>
-    // );
     throw new Error(res.error);
   }
   const pokemons = res.pokemons ?? [];

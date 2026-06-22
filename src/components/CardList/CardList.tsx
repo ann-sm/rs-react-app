@@ -8,9 +8,7 @@ type CardListProps = {
 
 const CardList = ({ pokemons }: CardListProps) => {
   const t = useTranslations('cardlist');
-  // if (isLoading || isFetching) {
-  //   return <Loader />;
-  // }
+
   if (!pokemons) {
     return;
   }
