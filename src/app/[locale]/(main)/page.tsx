@@ -11,12 +11,10 @@ import Loader from './loading';
 import ErrorBoundaryWrapper from '../../../components/ErrorBoundaryWrapper/ErrorBoundaryWrapper';
 
 type HomeProps = {
-  params: Promise<{ locale: string }>;
   searchParams: Promise<{ page?: string; details?: string; search?: string }>;
 };
 
-const Home = async ({ params, searchParams }: HomeProps) => {
-  const { locale } = await params; 
+const Home = async ({ searchParams }: HomeProps) => {
   const searchParameters = await searchParams;
   const search = searchParameters.search || '';
   const detailsId = searchParameters.details;
@@ -28,7 +26,7 @@ const Home = async ({ params, searchParams }: HomeProps) => {
     }
 
     searchParams.set('page', '1');
-    redirect(`/${locale}?${searchParams.toString()}`);
+    redirect(`/?${searchParams.toString()}`);
   }
 
   const page = Number(searchParameters.page);

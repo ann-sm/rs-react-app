@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import { useTheme } from '../../contexts/theme/useTheme';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
 
 const Header = () => {
   const t = useTranslations('header');
-  const locale = useLocale();
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -16,7 +15,7 @@ const Header = () => {
         <div className="flex justify-end gap-6">
           <LanguageSwitcher />
           <Link
-            href={`${locale}/about`}
+            href={'/about'}
             className="inline-flex items-center gap-2 text-gray-100 dark:text-teal-950 hover:text-yellow-400 transition-colors duration-200 hover:cursor-pointer group"
           >
             <svg
@@ -69,7 +68,7 @@ const Header = () => {
           </button>
         </div>
         <h1 className="inline-block text-4xl font-logo font-black text-yellow-400 uppercase text-center mb-4 tracking-wider [text-shadow:2px_2px_0_rgb(185_28_28)] transition-all duration-300 hover:scale-102">
-          <Link href={`/${locale}`}>PokéSearch</Link>
+          <Link href='/'>PokéSearch</Link>
         </h1>
       </div>
     </header>

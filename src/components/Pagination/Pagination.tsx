@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 type PaginationProps = {
@@ -10,7 +10,6 @@ type PaginationProps = {
 
 const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
   const t = useTranslations('pagination');
-  const locale = useLocale();
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -18,9 +17,9 @@ const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
 
   const handleNavigation = (page: number) => {
       if (searchValue) {
-        router.push(`/${locale}?search=${encodeURIComponent(searchValue)}&page=${page}`);
+        router.push(`/?search=${encodeURIComponent(searchValue)}&page=${page}`);
       } else {
-        router.push(`/${locale}?page=${page}`);
+        router.push(`/?page=${page}`);
       }
   };
 

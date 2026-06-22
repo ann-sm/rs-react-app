@@ -67,7 +67,7 @@ const About = async ({ params }: AboutProps) => {
               </Link>
             </p>
             <Link
-              href={`/${locale}`}
+              href='/'
               className="inline-block bg-teal-600 text-white font-mono px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md"
             >
               {t('back')}

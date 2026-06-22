@@ -1,9 +1,8 @@
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 const NotFound = () => {
   const t = useTranslations('notFound');
-  const locale = useLocale();
   
   return (
     <main className="min-h-screen bg-gray-100 dark:bg-teal-950 flex items-center justify-center">
@@ -21,7 +20,7 @@ const NotFound = () => {
 
         <div className="space-x-4">
           <Link
-            href={`/${locale}`}
+            href='/'
             className="inline-block bg-teal-600 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md"
           >
             {t('back')}
