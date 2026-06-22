@@ -62,10 +62,10 @@ const Card = ({ data, index }: CardProps) => {
           )}
         </div>
         <div className="p-4">
-          <h3 className="text-xl font-accent font-bold text-teal-700 dark:text-green-200 capitalize mb-2">
+          <h3 className="text-xl font-accent font-semibold text-teal-700 dark:text-green-200 capitalize mb-2">
             {name}
           </h3>
-          <p className="font-mono text-md font-bold text-gray-600 dark:text-gray-300 mb-1">
+          <p className="font-mono text-md font-semibold text-gray-600 dark:text-gray-300 mb-1">
             {abilities.join(',') || 'n/a'}
           </p>
           <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-1">

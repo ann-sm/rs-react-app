@@ -25,7 +25,7 @@ const About = async ({ params }: AboutProps) => {
             {t('description')}
           </p>
           <div>
-            <h2 className="text-xl font-bold text-teal-600 mt-6 mb-3">
+            <h2 className="text-xl font-semibold text-teal-600 mt-6 mb-3">
               {t('technologies')}
             </h2>
             <ul className="list-disc list-inside space-y-1 dark:text-gray-300">
@@ -45,7 +45,7 @@ const About = async ({ params }: AboutProps) => {
             </ul>
           </div>
           <div>
-            <h2 className="text-xl font-bold text-teal-600 mt-6 mb-3">
+            <h2 className="text-xl font-semibold text-teal-600 mt-6 mb-3">
               {t('course')}
             </h2>
             <p className="mb-8 dark:text-gray-300">
@@ -68,7 +68,7 @@ const About = async ({ params }: AboutProps) => {
             </p>
             <Link
               href={`/${locale}`}
-              className="inline-block bg-teal-600 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md"
+              className="inline-block bg-teal-600 text-white font-mono px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md"
             >
               {t('back')}
             </Link>

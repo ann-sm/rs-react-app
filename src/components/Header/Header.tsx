@@ -4,13 +4,11 @@ import Link from 'next/link';
 import { useTheme } from '../../contexts/theme/useTheme';
 import { useLocale, useTranslations } from 'next-intl';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
-// import { useAppDispatch } from '../../store/hooks';
 
 const Header = () => {
   const t = useTranslations('header');
   const locale = useLocale();
   const { theme, toggleTheme } = useTheme();
-  // const dispatch = useAppDispatch();
 
   return (
     <header className="bg-teal-700 shadow-lg">
@@ -65,12 +63,7 @@ const Header = () => {
             )}
           </button>
           <button
-            // onClick={() =>
-            //   dispatch(
-            //     pokemonApi.util.invalidateTags(['PokemonList', 'Pokemon'])
-            //   )
-            // }
-            className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:cursor-pointer hover:bg-teal-800 transition-colors duration-200 font-mono"
+            className="w-28 bg-teal-600 text-white px-4 py-2 rounded-lg hover:cursor-pointer hover:bg-teal-800 transition-colors duration-200 font-mono"
           >
             {t('refresh')}
           </button>

@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 @import 'tailwindcss';
 
@@ -9,7 +9,7 @@ html {
 
 @theme {
   --font-logo: 'Cherry Bomb One', system-ui;
-  --font-mono: 'Inconsolata', system-ui;
+  --font-mono: 'Ubuntu Mono', system-ui;
   --font-accent: 'Space Grotesk', system-ui;
 }
 

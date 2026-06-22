@@ -32,8 +32,8 @@ const Flyout = () => {
 
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Failed to generate CSV:', error);
+    } catch {
+        throw new Error ('Failed to generate CSV');
     }
   };
 
@@ -46,14 +46,14 @@ const Flyout = () => {
       <h3 className="font-mono text-lg text-md mb-4">{`${selectedPokemons.length} ${t('selected')}`}</h3>
       <div className="space-x-4">
         <button
-          className="inline-block bg-gray-500 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors shadow-md cursor-pointer"
+          className="inline-block bg-gray-500 text-white font-mono px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors shadow-md cursor-pointer"
           onClick={() => dispatch(unselectAllPokemons())}
         >
           {t('unselectAll')}
         </button>
         <button
           onClick={handleDownload}
-          className="inline-block bg-teal-600 text-white font-mono text-lg px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md cursor-pointer"
+          className="inline-block bg-teal-600 text-white font-mono px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors shadow-md cursor-pointer"
         >
           {t('download')}
         </button>

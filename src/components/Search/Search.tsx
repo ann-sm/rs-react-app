@@ -51,7 +51,7 @@ const Search = ({ initialValue }: SearchProps) => {
       <button
         type="submit"
         disabled={isPending}
-        className="bg-yellow-500 text-white font-mono text-lg px-6 py-3 rounded-br-lg rounded-tr-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
+        className="w-26 bg-yellow-500 text-white font-mono px-6 py-3 rounded-br-lg rounded-tr-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
       >
         {isPending ? '...' : t('button')}
       </button>

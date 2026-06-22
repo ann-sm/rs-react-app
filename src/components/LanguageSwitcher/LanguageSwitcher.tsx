@@ -21,7 +21,7 @@ const LanguageSwitcher = () => {
   }
 
   return (
-    <button onClick={switchLocale} className='font-mono text-white text-xl cursor-pointer hover:text-yellow-400'>
+    <button onClick={switchLocale} className='font-mono text-gray-100 dark:text-teal-950 text-lg cursor-pointer hover:text-yellow-400'>
       {currentLocale.toString().toUpperCase()}
     </button>
   );

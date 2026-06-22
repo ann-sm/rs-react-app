@@ -11,7 +11,7 @@ const NotFound = () => {
         <h1 className="text-6xl font-logo font-black text-teal-700 mb-4">
           404
         </h1>
-        <h2 className="text-2xl font-mono font-bold text-gray-700 dark:text-gray-300 mb-4">
+        <h2 className="text-2xl font-mono font-semibold text-gray-700 dark:text-gray-300 mb-4">
           {t('subtitle')}
         </h2>
 
