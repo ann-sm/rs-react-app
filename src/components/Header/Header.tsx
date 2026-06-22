@@ -4,10 +4,23 @@ import Link from 'next/link';
 import { useTheme } from '../../contexts/theme/useTheme';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '../LanguageSwitcher/LanguageSwitcher';
+import { useRouter, useSearchParams } from 'next/navigation';
+import revalidatePokemonData from '../../actions/revalidateAction';
 
 const Header = () => {
   const t = useTranslations('header');
   const { theme, toggleTheme } = useTheme();
+
+  const router = useRouter();
+  
+  const searchParams = useSearchParams();
+  const page = searchParams?.get('page') || '1';
+  const detailsId = searchParams?.get('details');
+
+  const handleRefresh = () => {
+    revalidatePokemonData(page, detailsId || undefined);
+    router.refresh();
+  }
 
   return (
     <header className="bg-teal-700 shadow-lg">
@@ -62,6 +75,7 @@ const Header = () => {
             )}
           </button>
           <button
+            onClick={handleRefresh}
             className="w-28 bg-teal-600 text-white px-4 py-2 rounded-lg hover:cursor-pointer hover:bg-teal-800 transition-colors duration-200 font-mono"
           >
             {t('refresh')}

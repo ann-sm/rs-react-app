@@ -5,6 +5,7 @@ import CloseButton from '../CloseButton/CloseButton';
 import { getPokemonDetails } from '../../services/pokemonApi';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
+import ErrorComponent from '../ErrorComponent/ErrorComponent';
 
 type DetailsProps = {
   pokemonId: string;
@@ -12,13 +13,17 @@ type DetailsProps = {
 
 const Details = async ({ pokemonId }: DetailsProps) => {
   const t = await getTranslations('details');
+
+  const isValidId = pokemonId && !isNaN(Number(pokemonId)) && Number(pokemonId) > 0;
+
   const pokemon = await getPokemonDetails(pokemonId);
 
-  if (!pokemon) {
+  if (!isValidId || !pokemon) {
+    const message = isValidId ? 'Failed to fetch details' : 'Invalid Pokemon ID'
     return (
       <div className="p-4 fixed mr-8 bg-white dark:bg-cyan-900 w-1/4 rounded-lg shadow-md mt-4 text-left">
+        <ErrorComponent error={message} />
         <CloseButton />
-        <p className="text-gray-500 font-mono mt-10">{`${t('notFound')} ${pokemonId}`}</p>
       </div>
     );
   }

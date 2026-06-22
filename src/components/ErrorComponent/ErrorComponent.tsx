@@ -1,87 +1,16 @@
-import type { SerializedError } from '@reduxjs/toolkit';
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+'use client';
 
-type QueryError = FetchBaseQueryError | SerializedError | undefined;
+import { useRouter } from "next/navigation";
 
-function getErrorMessage(error: QueryError): string {
-  if (!error) {
-    return 'An unknown error occurred. Please try again later.';
-  }
-
-  if ('status' in error) {
-    const status = error.status;
-    const errorMessage = 'error' in error ? error.error : null;
-    const data = error.data;
-
-    if (error.data === 'Not Found' || errorMessage === 'Invalid Pokemon ID') {
-      return 'Pokemon not found. Please try a different search.';
-    }
-
-    if (typeof status === 'string') {
-      switch (status) {
-        case 'FETCH_ERROR':
-          return 'Network error: Unable to connect to the server. Please check your internet connection.';
-        case 'PARSING_ERROR':
-          return 'Error parsing server response. Please try again.';
-        case 'TIMEOUT_ERROR':
-          return 'Request timed out. Please try again.';
-        default:
-          return `Request error: ${errorMessage || status}`;
-      }
-    }
-
-    if (typeof status === 'number') {
-      if (status === 400) {
-        return 'Bad request. Please try again.';
-      }
-      if (status === 404) {
-        return 'Pokemon not found. Please try a different search.';
-      }
-      if (status === 429) {
-        return 'Too many requests. Please wait a moment and try again.';
-      }
-      if (status === 500) {
-        return 'Server error. Please try again later.';
-      }
-      if (status >= 500) {
-        return 'Server error. Please try again later.';
-      }
-
-      if (data && typeof data === 'object') {
-        if ('message' in data && typeof data.message === 'string') {
-          return `Error ${status}: ${data.message}`;
-        }
-        if ('error' in data && typeof data.error === 'string') {
-          return `Error ${status}: ${data.error}`;
-        }
-      }
-
-      return `Error ${status}: Failed to load pokemon data.`;
-    }
-  }
-
-  if ('message' in error && error.message) {
-    return `Error: ${error.message}`;
-  }
-
-  return 'An unexpected error occurred. Please try again later.';
+type ErrorComponentProps = {
+  error: string;
 }
 
-function ErrorComponent({
-  error,
-  onRetry,
-}: {
-  error: QueryError;
-  onRetry: () => void;
-}) {
-  const errorMessage = getErrorMessage(error);
+const ErrorComponent = ({ error }:  ErrorComponentProps) => {
+  const router = useRouter();
 
   const handleRetryClick = () => {
-    if (onRetry) {
-      onRetry();
-    } else {
-      window.location.reload();
-    }
+    router.refresh();
   };
 
   return (
@@ -106,7 +35,7 @@ function ErrorComponent({
         Oops! Something went wrong
       </p>
       <p className="text-md font-mono text-gray-600 dark:text-gray-400">
-        {errorMessage}
+        {error}
       </p>
       <button
         onClick={handleRetryClick}

@@ -9,6 +9,7 @@ import Flyout from '../../../components/Flyout/Flyout';
 import { Suspense } from 'react';
 import Loader from './loading';
 import ErrorBoundaryWrapper from '../../../components/ErrorBoundaryWrapper/ErrorBoundaryWrapper';
+import ErrorComponent from '../../../components/ErrorComponent/ErrorComponent';
 
 type HomeProps = {
   searchParams: Promise<{ page?: string; details?: string; search?: string }>;
@@ -32,11 +33,22 @@ const Home = async ({ searchParams }: HomeProps) => {
 
   const page = Number(urlParameters.page) || 1;
 
-
   const res = await fetchPokemons(search, page);
 
+  if (!res) {
+    return (
+      <main className="flex items-center justify-center h-screen p-4 bg-gray-100 dark:bg-teal-950">
+        <ErrorComponent error='Failed to fetch pokemons. Please try again.' />
+      </main>
+    ); 
+  }
+
   if (res.error) {
-    throw new Error(res.error);
+    return (
+      <main className="flex items-center justify-center h-screen p-4 bg-gray-100 dark:bg-teal-950">
+        <ErrorComponent error={res.error} />
+      </main>
+    );
   }
 
   const pokemons = res.pokemons ?? [];
@@ -53,7 +65,9 @@ const Home = async ({ searchParams }: HomeProps) => {
               : 'flex flex-col w-full h-full px-24 items-center'
           }
         >
-          <CardList pokemons={pokemons} />
+          <Suspense fallback={<Loader />}>
+            <CardList pokemons={pokemons} />
+          </Suspense>
         </section>
         {detailsId && (
           <section className="w-1/4 mr-8">

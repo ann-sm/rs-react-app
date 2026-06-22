@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 export interface PokemonResponse {
   name: string;
   url: string;
@@ -40,21 +38,4 @@ export interface Pokemon extends Omit<
   abilities: string[];
   types: string[];
   cry: string;
-}
-
-export interface AppState {
-  pokemons: Pokemon[];
-  savedValue: string;
-  isLoading: boolean;
-  hasError: boolean;
-}
-
-export interface ErrorBoundaryProps {
-  children: ReactNode;
-  fallback?: ReactNode;
-}
-
-export interface ErrorBoundaryState {
-  hasError: boolean;
-  error?: Error;
 }

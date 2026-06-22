@@ -1,10 +1,16 @@
 'use client';
 
-import { Component, type ErrorInfo } from 'react';
-import type {
-  ErrorBoundaryProps,
-  ErrorBoundaryState,
-} from '../../common/types';
+import { Component, ReactNode, type ErrorInfo } from 'react';
+
+type ErrorBoundaryProps = {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+type ErrorBoundaryState = {
+  hasError: boolean;
+  error?: Error;
+}
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {

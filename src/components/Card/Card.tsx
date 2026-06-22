@@ -49,6 +49,7 @@ const Card = ({ data, index }: CardProps) => {
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               priority={index < 4}
+              loading={index < 4 ? "eager" : "lazy"}
               className="absolute inset-0 w-full h-full object-contain p-4"
             ></Image>
           ) : (

@@ -24,7 +24,8 @@ export const fetchPokemons = async (searchValue: string, page: number) => {
 
     if (!searchValue) {
       const response = await fetch(
-        `${BASE_URL}?limit=${limit}&offset=${offset}`
+        `${BASE_URL}?limit=${limit}&offset=${offset}`,
+        { cache: 'force-cache', next: { tags: [`pokemons-${page}`] } }
       );
       if (!response.ok) throw new Error('Failed to fetch pokemons');
       const data: { results: PokemonResponse[]; count: number } =
@@ -33,7 +34,7 @@ export const fetchPokemons = async (searchValue: string, page: number) => {
       const items = await Promise.all(
         data.results.map(async (item) => {
           const pokemonId = item.url.split('/').filter(Boolean).pop();
-          const detailResponse = await fetch(`${BASE_URL}/${pokemonId}`);
+          const detailResponse = await fetch(`${BASE_URL}/${pokemonId}`, { cache: 'force-cache' });
           if (!detailResponse.ok)
             throw new Error('Failed to fetch pokemon details');
 
@@ -46,7 +47,8 @@ export const fetchPokemons = async (searchValue: string, page: number) => {
     } else {
       // Search by name
       const response = await fetch(
-        `${BASE_URL}?limit=${POKEMONS_TOTAL}&offset=0`
+        `${BASE_URL}?limit=${POKEMONS_TOTAL}&offset=0`,
+        { cache: 'force-cache' }
       );
       if (!response.ok) throw new Error('Failed to fetch pokemons');
       const data: { results: PokemonResponse[]; count: number } =
@@ -60,7 +62,7 @@ export const fetchPokemons = async (searchValue: string, page: number) => {
       const items = await Promise.all(
         paginatedData.map(async (item) => {
           const pokemonId = item.url.split('/').filter(Boolean).pop();
-          const detailResponse = await fetch(`${BASE_URL}/${pokemonId}`);
+          const detailResponse = await fetch(`${BASE_URL}/${pokemonId}`, { cache: 'force-cache' });
           if (!detailResponse.ok)
             throw new Error('Failed to fetch pokemon details');
 
@@ -71,19 +73,21 @@ export const fetchPokemons = async (searchValue: string, page: number) => {
       pokemonsTotal = filteredData.length;
     }
     return { pokemons, pokemonsTotal };
-  } catch {
-    return { error: 'Failed to search pokemon' };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
   }
 };
 
 export const getPokemonDetails = async (id: string) => {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`);
+    const response = await fetch(`${BASE_URL}/${id}`, { cache: 'force-cache', next: { tags: [`pokemon-${id}`] }});
     if (!response.ok) throw new Error('Failed to fetch details');
     const data = await response.json();
 
     return transformPokemonData(data);
   } catch {
-    return null;
+      return null;
   }
 };
