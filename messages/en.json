@@ -1,0 +1,46 @@
+{
+  "app": {
+    "title": "PokéSearch",
+    "description": "Search and explore Pokémon"
+  },
+  "header": {
+    "refresh": "Refresh"
+  },
+  "search": {
+    "placeholder": "Enter a pokemon name...",
+    "button": "Search"
+  },
+  "cardlist": {
+    "noResults": "No pokemons found. Try something different!"
+  },
+  "pagination": {
+    "of": "of"
+  },
+  "about": {
+    "title": "About PokéSearch",
+    "description": "PokéSearch is a comprehensive Pokémon search application built with React and the PokéAPI. It allows users to search for Pokémon, view detailed information, and navigate through pages of results.",
+    "technologies": "Technologies Used",
+    "course": "Course",
+    "created": "This project was created by ",
+    "part": "as part of the ",
+    "back": "← Back to Search"
+  },
+  "details": {
+    "notFound": "Pokemon not found",
+    "types": "types",
+    "abilities": "abilities",
+    "height": "height",
+    "weight": "weight",
+    "noImage": "No image available"
+  },
+  "flyout": {
+    "selected": "pokemon(s) selected",
+    "unselectAll": "Unselect all",
+    "download": "Download"
+  },
+  "notFound": {
+    "subtitle": "Page Not Found",
+    "description": "Oops! The page you're looking for doesn't exist.",
+    "back": "Go to PokéSearch"
+  }
+}

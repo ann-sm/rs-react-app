@@ -1,12 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Pokemon, PokemonData, PokemonResponse } from '../types';
-import type { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-
-const CACHE_TTL = Number(import.meta.env.VITE_API_CACHE_TTL) || 60;
-
-export const BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
-export const ITEMS_ON_PAGE = 20;
-export const POKEMONS_TOTAL = 1350;
+import type { Pokemon, PokemonData, PokemonResponse } from '../common/types';
+import { BASE_URL, ITEMS_ON_PAGE, POKEMONS_TOTAL } from '../common/constants';
 
 const transformPokemonData = (data: PokemonData): Pokemon => {
   return {
@@ -21,113 +14,80 @@ const transformPokemonData = (data: PokemonData): Pokemon => {
   };
 };
 
-export const pokemonApi = createApi({
-  reducerPath: 'pokemonApi',
-  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
-  tagTypes: ['PokemonList', 'Pokemon'],
-  keepUnusedDataFor: CACHE_TTL,
-  endpoints: (builder) => ({
-    getPokemonList: builder.query<
-      { items: Pokemon[]; itemsTotal: number },
-      { searchValue: string; page: number }
-    >({
-      async queryFn({ searchValue, page }, _api, _extraOptions, fetchWithBQ) {
-        const limit = ITEMS_ON_PAGE;
-        const offset = (page - 1) * limit;
+export const fetchPokemons = async (searchValue: string, page: number) => {
+  const limit = ITEMS_ON_PAGE;
+  const offset = (page - 1) * limit;
 
-        if (!searchValue) {
-          const response = await fetchWithBQ(
-            `?limit=${limit}&offset=${offset}`
-          );
-          if (response.error) {
-            return { error: response.error };
-          }
+  try {
+    let pokemons: Pokemon[] = [];
+    let pokemonsTotal = 0;
 
-          const data = response.data as {
-            results: PokemonResponse[];
-            count: number;
-          };
+    if (!searchValue) {
+      const response = await fetch(
+        `${BASE_URL}?limit=${limit}&offset=${offset}`,
+        { cache: 'force-cache', next: { tags: [`pokemons-${page}`] } }
+      );
+      if (!response.ok) throw new Error('Failed to fetch pokemons');
+      const data: { results: PokemonResponse[]; count: number } =
+        await response.json();
 
-          try {
-            const items = await Promise.all(
-              data.results.map(async (item) => {
-                const pokemonId = item.url.split('/').filter(Boolean).pop();
-                const response = await fetchWithBQ(`/${pokemonId}`);
-                if (response.error) {
-                  throw response.error;
-                }
-                return transformPokemonData(response.data as PokemonData);
-              })
-            );
-            const itemsTotal = data.count;
-            return { data: { items, itemsTotal } };
-          } catch (error) {
-            if (error && typeof error === 'object' && 'status' in error) {
-              return { error: error as FetchBaseQueryError };
-            }
-            return {
-              error: {
-                status: 'FETCH_ERROR',
-                error:
-                  error instanceof Error
-                    ? error.message
-                    : 'Failed to fetch pokemon details',
-              } as FetchBaseQueryError,
-            };
-          }
-        }
+      const items = await Promise.all(
+        data.results.map(async (item) => {
+          const pokemonId = item.url.split('/').filter(Boolean).pop();
+          const detailResponse = await fetch(`${BASE_URL}/${pokemonId}`, { cache: 'force-cache' });
+          if (!detailResponse.ok)
+            throw new Error('Failed to fetch pokemon details');
 
-        // Search by name
-        const response = await fetchWithBQ(`?limit=${POKEMONS_TOTAL}&offset=0`);
-        if (response.error) {
-          return { error: response.error };
-        }
+          return transformPokemonData(await detailResponse.json());
+        })
+      );
 
-        const data = response.data as { results: PokemonResponse[] };
+      pokemons = items;
+      pokemonsTotal = data.count;
+    } else {
+      // Search by name
+      const response = await fetch(
+        `${BASE_URL}?limit=${POKEMONS_TOTAL}&offset=0`,
+        { cache: 'force-cache' }
+      );
+      if (!response.ok) throw new Error('Failed to fetch pokemons');
+      const data: { results: PokemonResponse[]; count: number } =
+        await response.json();
 
-        const filteredData = data.results.filter((item) =>
-          item.name.toLowerCase().includes(searchValue.toLowerCase())
-        );
-        const paginatedData = filteredData.slice(offset, offset + limit);
+      const filteredData = data.results.filter((item) =>
+        item.name.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      const paginatedData = filteredData.slice(offset, offset + limit);
 
-        try {
-          const items = await Promise.all(
-            paginatedData.map(async (item) => {
-              const pokemonId = item.url.split('/').filter(Boolean).pop();
-              const response = await fetchWithBQ(`/${pokemonId}`);
-              if (response.error) {
-                throw response.error;
-              }
-              return transformPokemonData(response.data as PokemonData);
-            })
-          );
-          const itemsTotal = filteredData.length;
-          return { data: { items, itemsTotal } };
-        } catch (error) {
-          if (error && typeof error === 'object' && 'status' in error) {
-            return { error: error as FetchBaseQueryError };
-          }
-          return {
-            error: {
-              status: 'FETCH_ERROR',
-              error:
-                error instanceof Error
-                  ? error.message
-                  : 'Failed to fetch pokemon details',
-            } as FetchBaseQueryError,
-          };
-        }
-      },
-      providesTags: ['PokemonList'],
-    }),
+      const items = await Promise.all(
+        paginatedData.map(async (item) => {
+          const pokemonId = item.url.split('/').filter(Boolean).pop();
+          const detailResponse = await fetch(`${BASE_URL}/${pokemonId}`, { cache: 'force-cache' });
+          if (!detailResponse.ok)
+            throw new Error('Failed to fetch pokemon details');
 
-    getPokemon: builder.query<Pokemon, string>({
-      query: (id) => `/${id}`,
-      transformResponse: (response: PokemonData) =>
-        transformPokemonData(response),
-      providesTags: (_result, _error, id) => [{ type: 'Pokemon', id }],
-    }),
-  }),
-});
+          return transformPokemonData(await detailResponse.json());
+        })
+      );
+      pokemons = items;
+      pokemonsTotal = filteredData.length;
+    }
+    return { pokemons, pokemonsTotal };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { error: error.message };
+    }
+  }
+};
 
-export const { useGetPokemonListQuery, useGetPokemonQuery } = pokemonApi;
+export const getPokemonDetails = async (id: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${id}`, { cache: 'force-cache', next: { tags: [`pokemon-${id}`] }});
+    if (!response.ok) throw new Error('Failed to fetch details');
+    const data = await response.json();
+
+    return transformPokemonData(data);
+  } catch {
+      return null;
+  }
+};

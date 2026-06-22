@@ -1,30 +1,47 @@
-import type { PaginationProps } from '../../types';
+'use client';
 
-function Pagination({
-  currentPage,
-  totalPages,
-  onPrevPage,
-  onNextPage,
-}: PaginationProps) {
+import { useTranslations } from 'next-intl';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+type PaginationProps = {
+  currentPage: number;
+  totalPages: number;
+};
+
+const Pagination = ({ currentPage, totalPages }: PaginationProps) => {
+  const t = useTranslations('pagination');
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const searchValue = searchParams?.get('search') || '';
+
+  const handleNavigation = (page: number) => {
+      if (searchValue) {
+        router.push(`/?search=${encodeURIComponent(searchValue)}&page=${page}`);
+      } else {
+        router.push(`/?page=${page}`);
+      }
+  };
+
   return (
     <nav className="mt-6">
       <button
+        onClick={() => handleNavigation(currentPage - 1)}
         className="px-4 py-2 bg-teal-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 transition-colors font-mono font-bold hover:cursor-pointer"
-        onClick={() => onPrevPage(currentPage)}
         disabled={currentPage === 1}
       >
         &lt;
       </button>
-      <span className="px-4 font-mono dark:text-gray-300">{`${currentPage} of ${totalPages}`}</span>
+      <span className="px-4 font-mono dark:text-gray-300">{`${currentPage} ${t('of')} ${totalPages}`}</span>
       <button
+        onClick={() => handleNavigation(currentPage + 1)}
         className="px-4 py-2  bg-teal-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-700 transition-colors font-mono font-bold hover:cursor-pointer"
-        onClick={() => onNextPage(currentPage)}
         disabled={currentPage === totalPages}
       >
         &gt;
       </button>
     </nav>
   );
-}
+};
 
 export default Pagination;

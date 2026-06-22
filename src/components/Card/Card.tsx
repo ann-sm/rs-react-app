@@ -1,13 +1,37 @@
-import { Link, useSearchParams } from 'react-router-dom';
-import type { CardProps } from '../../types';
+'use client';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import type { Pokemon } from '../../common/types';
+import { useSearchParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { togglePokemon } from '../../store/selectedPokemonsSlice';
 
-function Card({ data }: CardProps) {
-  const { id, name, height, weight, image, abilities } = data;
+type CardProps = {
+  data: Pokemon;
+  index: number;
+};
 
-  const [searchParams] = useSearchParams();
-  const page = Number(searchParams.get('page') || 1);
+const Card = ({ data, index }: CardProps) => {
+  const { id, name, height, weight, image, abilities } = data;
+  const searchParams = useSearchParams();
+
+  const page = searchParams?.get('page');
+  const search = searchParams?.get('search') || '';
+
+  const getDetailsUrl = () => {
+    const params = new URLSearchParams();
+
+    if (search) {
+      params.set('search', search);
+    }
+    if (page) {
+      params.set('page', page);
+    }
+
+    params.set('details', id.toString());
+    return `/?${params.toString()}`;
+  };
 
   const dispatch = useAppDispatch();
   const selectedPokemons = useAppSelector(
@@ -15,15 +39,19 @@ function Card({ data }: CardProps) {
   );
 
   return (
-    <Link to={`/?page=${page}&details=${id}`} className="block h-full min-w-0">
+    <Link href={getDetailsUrl()} className="block h-full min-w-0">
       <article className="relative flex flex-col bg-white dark:bg-cyan-900 rounded-lg shadow-md h-full w-full min-w-0 overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer text-left">
         <div className="relative pb-[100%] bg-linear-to-br from-teal-50 to-blue-50 dark:from-slate-500 dark:to-mist-500">
           {image ? (
-            <img
+            <Image
               src={image}
               alt={`${name} image`}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={index < 4}
+              loading={index < 4 ? "eager" : "lazy"}
               className="absolute inset-0 w-full h-full object-contain p-4"
-            ></img>
+            ></Image>
           ) : (
             <div className="absolute flex w-full h-full items-center justify-center">
               <p className="text-lg font-mono text-gray-500">
@@ -33,10 +61,10 @@ function Card({ data }: CardProps) {
           )}
         </div>
         <div className="p-4">
-          <h3 className="text-xl font-accent font-bold text-teal-700 dark:text-green-200 capitalize mb-2">
+          <h3 className="text-xl font-accent font-semibold text-teal-700 dark:text-green-200 capitalize mb-2">
             {name}
           </h3>
-          <p className="font-mono text-md font-bold text-gray-600 dark:text-gray-300 mb-1">
+          <p className="font-mono text-md font-semibold text-gray-600 dark:text-gray-300 mb-1">
             {abilities.join(',') || 'n/a'}
           </p>
           <p className="font-mono text-md text-gray-600 dark:text-gray-300 mb-1">
@@ -57,6 +85,6 @@ function Card({ data }: CardProps) {
       </article>
     </Link>
   );
-}
+};
 
 export default Card;

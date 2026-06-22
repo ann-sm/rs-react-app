@@ -1,6 +1,8 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
 
-function Audio({ cry }: { cry: string }) {
+const Audio = ({ cry }: { cry: string }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -48,6 +50,6 @@ function Audio({ cry }: { cry: string }) {
       </button>
     </div>
   );
-}
+};
 
 export default Audio;
