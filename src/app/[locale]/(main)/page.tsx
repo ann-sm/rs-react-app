@@ -46,7 +46,7 @@ const Home = async ({ searchParams }: HomeProps) => {
 
   return (
     <main className="flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 text-center">
-      <Search initialValue={search} />
+      <Search paramsValue={search} />
       <section className="flex flex-1">
         <section
           className={

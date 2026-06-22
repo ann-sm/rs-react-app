@@ -4,12 +4,17 @@ const STORAGE_KEY = 'ann-sm-pokemons';
 
 function useLocalStorage(): [string, (value: string) => void] {
   const [value, setValue] = useState(() => {
-    const data = localStorage.getItem(STORAGE_KEY) || '';
-    return data || '';
+    if (typeof window !== 'undefined') {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data || '';
+    }
+    return '';
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, value);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, value);
+    }
   }, [value]);
 
   return [value, setValue];

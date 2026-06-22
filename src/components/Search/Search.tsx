@@ -6,9 +6,10 @@ import {
   searchPokemons,
 } from '../../actions/pokemonActions';
 import { useLocale, useTranslations } from 'next-intl';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 type SearchProps = {
-  initialValue: string;
+  paramsValue: string;
 };
 
 const initialState: PokemonActionState = {
@@ -16,9 +17,11 @@ const initialState: PokemonActionState = {
   pokemonsTotal: 0,
 };
 
-const Search = ({ initialValue }: SearchProps) => {
+const Search = ({ paramsValue }: SearchProps) => {
   const t = useTranslations('search');
   const locale = useLocale();
+  const [ savedValue, setSavedValue ] = useLocalStorage();
+  const initialValue = paramsValue || savedValue;
   
   const [, formAction, isPending] = useActionState(
     (state: PokemonActionState, formData: FormData) => 
@@ -33,6 +36,8 @@ const Search = ({ initialValue }: SearchProps) => {
     if (searchValue.toLowerCase() === initialValue.toLowerCase()) {
       event.preventDefault();
     }
+
+    setSavedValue(searchValue);
   };
 
   return (
