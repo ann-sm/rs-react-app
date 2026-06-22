@@ -1,15 +1,17 @@
 'use client';
 
-import { SubmitEventHandler, useActionState } from 'react';
+import { SubmitEventHandler, useActionState, useEffect } from 'react';
 import {
   PokemonActionState,
   searchPokemons,
-} from '../../actions/pokemonActions';
+} from '../../actions/pokemonSearchAction';
 import { useLocale, useTranslations } from 'next-intl';
 import useLocalStorage from '../../hooks/useLocalStorage';
+import { useRouter } from '../../i18n/navigation';
+import { useSearchParams } from 'next/navigation';
 
 type SearchProps = {
-  paramsValue: string;
+  paramsSearchValue: string;
 };
 
 const initialState: PokemonActionState = {
@@ -17,12 +19,35 @@ const initialState: PokemonActionState = {
   pokemonsTotal: 0,
 };
 
-const Search = ({ paramsValue }: SearchProps) => {
+const Search = ({ paramsSearchValue }: SearchProps) => {
   const t = useTranslations('search');
   const locale = useLocale();
-  const [ savedValue, setSavedValue ] = useLocalStorage();
-  const initialValue = paramsValue || savedValue;
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
   
+  const [savedValue, setSavedValue] = useLocalStorage();
+  const initialValue = paramsSearchValue || savedValue;
+
+  useEffect(() => {
+    const currentSearchParam = searchParams.get('search');
+    
+    if (!currentSearchParam && savedValue) {
+      const newParams = new URLSearchParams();
+      
+      newParams.set('search', savedValue);
+      newParams.set('page', '1');
+      
+      searchParams.forEach((value, key) => {
+        if (key !== 'search' && key !== 'page') {
+          newParams.append(key, value);
+        }
+      });
+      
+      router.push(`/?${newParams.toString()}`);
+    }
+  }, [savedValue, searchParams, router]);
+
   const [, formAction, isPending] = useActionState(
     (state: PokemonActionState, formData: FormData) => 
       searchPokemons(state, formData, locale),
@@ -52,7 +77,7 @@ const Search = ({ paramsValue }: SearchProps) => {
         defaultValue={initialValue}
         placeholder={t('placeholder')}
         className="flex-1 px-4 py-3 rounded-bl-lg font-mono rounded-tl-lg bg-white dark:bg-teal-950 border-2 border-transparent dark:border-teal-900 focus:border-yellow-400 focus:outline-none text-gray-800 dark:text-gray-300 placeholder-gray-400"
-      ></input>
+      />
       <button
         type="submit"
         disabled={isPending}
