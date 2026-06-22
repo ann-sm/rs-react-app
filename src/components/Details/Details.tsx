@@ -2,7 +2,7 @@
 
 import Audio from '../Audio/Audio';
 import CloseButton from '../CloseButton/CloseButton';
-import { getPokemonDetails } from '../../actions/pokemonActions';
+import { getPokemonDetails } from '../../services/pokemonApi';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 

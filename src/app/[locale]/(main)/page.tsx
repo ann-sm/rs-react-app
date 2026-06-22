@@ -1,7 +1,7 @@
 import Search from '../../../components/Search/Search';
 import CardList from '../../../components/CardList/CardList';
 import Pagination from '../../../components/Pagination/Pagination';
-import { fetchPokemons } from '../../../actions/pokemonActions';
+import { fetchPokemons } from '../../../services/pokemonApi';
 import { ITEMS_ON_PAGE } from '../../../common/constants';
 import { redirect } from 'next/navigation';
 import Details from '../../../components/Details/Details';
@@ -15,33 +15,36 @@ type HomeProps = {
 };
 
 const Home = async ({ searchParams }: HomeProps) => {
-  const searchParameters = await searchParams;
-  const search = searchParameters.search || '';
-  const detailsId = searchParameters.details;
+  const urlParameters = await searchParams;
+  const search = urlParameters.search || '';
+  const detailsId = urlParameters.details;
 
-  if (!searchParameters.page) {
-    const searchParams = new URLSearchParams();
+  if (!urlParameters.page) {
+    const newUrlParams = new URLSearchParams();
+
     if (search) {
-      searchParams.set('search', search);
+      newUrlParams.set('search', search);
     }
 
-    searchParams.set('page', '1');
-    redirect(`/?${searchParams.toString()}`);
+    newUrlParams.set('page', '1');
+    redirect(`/?${newUrlParams.toString()}`);
   }
 
-  const page = Number(searchParameters.page);
+  const page = Number(urlParameters.page) || 1;
+
 
   const res = await fetchPokemons(search, page);
 
   if (res.error) {
     throw new Error(res.error);
   }
+
   const pokemons = res.pokemons ?? [];
   const totalPages = Math.ceil((res.pokemonsTotal ?? 0) / ITEMS_ON_PAGE);
 
   return (
     <main className="flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 text-center">
-      <Search paramsValue={search} />
+      <Search paramsSearchValue={search} />
       <section className="flex flex-1">
         <section
           className={

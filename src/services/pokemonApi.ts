@@ -1,13 +1,5 @@
-'use server';
-
 import type { Pokemon, PokemonData, PokemonResponse } from '../common/types';
 import { BASE_URL, ITEMS_ON_PAGE, POKEMONS_TOTAL } from '../common/constants';
-import { redirect } from 'next/navigation';
-
-export type PokemonActionState = {
-  pokemons: Pokemon[];
-  pokemonsTotal: number;
-};
 
 const transformPokemonData = (data: PokemonData): Pokemon => {
   return {
@@ -93,18 +85,5 @@ export const getPokemonDetails = async (id: string) => {
     return transformPokemonData(data);
   } catch {
     return null;
-  }
-};
-
-export const searchPokemons = async (
-  _prevState: PokemonActionState,
-  formData: FormData,
-  locale: string
-) => {
-  const searchValue = formData.get('search')?.toString().trim() || '';
-  if (searchValue) {
-    redirect(`/${locale}?search=${encodeURIComponent(searchValue)}&page=1`);
-  } else {
-    redirect(`/${locale}?page=1`);
   }
 };
