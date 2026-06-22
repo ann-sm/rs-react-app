@@ -1,3 +1,5 @@
+'use client';
+
 import { Component, type ErrorInfo } from 'react';
 import type {
   ErrorBoundaryProps,
@@ -21,7 +23,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-teal-950">
+        <div className="fixed inset-0 z-50 flex flex-col min-h-screen bg-gray-100 dark:bg-teal-950">
           <div className="flex flex-col flex-1 items-center justify-center">
             <h1 className="text-4xl font-mono uppercase text-teal-700 dark:text-teal-600">
               Something went very wrong

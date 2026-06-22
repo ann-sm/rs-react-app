@@ -1,9 +1,18 @@
-import { useLocale, useTranslations } from 'next-intl';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 
-const About = () => {
-  const t = useTranslations('about');
-  const locale = useLocale();
+type AboutProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export const dynamic = 'force-static';
+
+const About = async ({ params }: AboutProps) => {
+  const { locale } = await params;
+
+  setRequestLocale(locale);
+
+  const t = await getTranslations('about');
   
   return (
     <main className=" flex flex-col flex-1 bg-gray-100 dark:bg-teal-950 justify-center">

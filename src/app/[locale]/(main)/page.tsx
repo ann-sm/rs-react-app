@@ -8,6 +8,7 @@ import Details from '../../../components/Details/Details';
 import Flyout from '../../../components/Flyout/Flyout';
 import { Suspense } from 'react';
 import Loader from './loading';
+import ErrorBoundaryWrapper from '../../../components/ErrorBoundaryWrapper/ErrorBoundaryWrapper';
 
 type HomeProps = {
   params: Promise<{ locale: string }>;
@@ -68,15 +69,8 @@ const Home = async ({ params, searchParams }: HomeProps) => {
       </section>
       {!res.error && pokemons.length > 0 && (
         <Pagination currentPage={page} totalPages={totalPages} />
-      )}
-      {/* <button
-          className="bg-yellow-500 text-white font-mono m-auto w-fit text-lg px-6 py-3 my-12 rounded-lg font-semibold hover:bg-yellow-400 transition-colors shadow-md cursor-pointer"
-          onClick={() => {
-            setHasError(true);
-          }}
-        >
-          Error Button
-        </button>  */}
+      )}    
+      <ErrorBoundaryWrapper />
       <Flyout />
     </main>
   );

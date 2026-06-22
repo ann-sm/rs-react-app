@@ -34,8 +34,8 @@
     "noImage": "Изображение отсутствует"
   },
   "flyout": {
-    "selected": "покемонов выбрано",
-    "unselectAll": "Снять все",
+    "selected": "покемона(ов) выбрано",
+    "unselectAll": "Отменить выбор",
     "download": "Скачать"
   },
   "notFound": {
